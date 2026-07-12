@@ -1,10 +1,11 @@
+import type { BaseIssue, ErrorMessage, BaseSchema } from 'valibot';
 import { Temporal } from '@js-temporal/polyfill';
-import * as v from 'valibot';
+import { _getStandardProps, _addIssue } from 'valibot';
 
 /**
  * Issue raised when the input is not a {@link Temporal.PlainTime} instance.
  */
-export interface PlainTimeIssue extends v.BaseIssue<unknown> {
+export interface PlainTimeIssue extends BaseIssue<unknown> {
   kind: 'schema';
   type: 'plain_time';
   expected: 'Temporal.PlainTime';
@@ -13,7 +14,7 @@ export interface PlainTimeIssue extends v.BaseIssue<unknown> {
 /**
  * Schema that accepts only {@link Temporal.PlainTime} instances.
  */
-export interface PlainTimeSchema<TMessage extends v.ErrorMessage<PlainTimeIssue> | undefined> extends v.BaseSchema<
+export interface PlainTimeSchema<TMessage extends ErrorMessage<PlainTimeIssue> | undefined> extends BaseSchema<
   Temporal.PlainTime,
   Temporal.PlainTime,
   PlainTimeIssue
@@ -40,13 +41,13 @@ export function plainTime(): PlainTimeSchema<undefined>;
  *
  * @returns A schema representing {@link Temporal.PlainTime}.
  */
-export function plainTime<const TMessage extends v.ErrorMessage<PlainTimeIssue> | undefined>(
+export function plainTime<const TMessage extends ErrorMessage<PlainTimeIssue> | undefined>(
   message: TMessage,
 ): PlainTimeSchema<TMessage>;
 
 export function plainTime(
-  message?: v.ErrorMessage<PlainTimeIssue>,
-): PlainTimeSchema<v.ErrorMessage<PlainTimeIssue> | undefined> {
+  message?: ErrorMessage<PlainTimeIssue>,
+): PlainTimeSchema<ErrorMessage<PlainTimeIssue> | undefined> {
   return {
     kind: 'schema',
     type: 'plain_time',
@@ -55,19 +56,19 @@ export function plainTime(
     async: false,
     message,
     get '~standard'() {
-      return v._getStandardProps(this);
+      return _getStandardProps(this);
     },
     '~run'(dataset, config) {
       if (dataset.value instanceof Temporal.PlainTime) {
         // @ts-expect-error We expect this here. As noted in valibot documentation this code is correct but simplifies the types
         dataset.typed = true;
       } else {
-        v._addIssue(this, 'type', dataset, config);
+        _addIssue(this, 'type', dataset, config);
       }
 
       // @ts-expect-error We expect this here. As noted in valibot documentation this code is correct but simplifies the types
-      // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-      return dataset as v.OutputDataset<Temporal.PlainTime, PlainTimeIssue>;
+      // oxlint-disable-next-line typescript/no-unsafe-type-assertion typescript/no-unsafe-return
+      return dataset as OutputDataset<Temporal.PlainTime, PlainTimeIssue>;
     },
   };
 }
