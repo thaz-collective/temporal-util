@@ -1,21 +1,21 @@
 {
-  "name": "@thaz/custom-lint-rules",
+  "name": "@thaz/temporal-util",
   "version": "1.0.0-rc.1",
-  "description": "Set of custom lint rules for applications and libraries in the thaz collective namespace",
+  "description": "Set of temporal utilities for applications and libraries in the thaz collective namespace",
   "keywords": [
-    "config",
-    "lint",
-    "oxlint"
+    "date",
+    "temporal",
+    "valibot"
   ],
-  "homepage": "https://github.com/thaz-collective/custom-lint-rules#readme",
+  "homepage": "https://github.com/thaz-collective/temporal-util#readme",
   "bugs": {
-    "url": "https://github.com/thaz-collective/custom-lint-rules/issues"
+    "url": "https://github.com/thaz-collective/temporal-util/issues"
   },
   "license": "MIT",
   "author": "Tim Hazlett",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/thaz-collective/custom-lint-rules.git"
+    "url": "git+https://github.com/thaz-collective/temporal-util.git"
   },
   "files": [
     "dist",
