@@ -12,7 +12,7 @@ export interface LocaleOptions {
 /**
  * Date portion of the {@link TemporalIntl.DateTimeFormat}, all fields required.
  */
-export interface DateFormatterOptions {
+export interface PlainDateFormatterOptions {
   year: NonNullable<Intl.DateTimeFormatOptions['year']>;
   month: NonNullable<Intl.DateTimeFormatOptions['month']>;
   day: NonNullable<Intl.DateTimeFormatOptions['day']>;
@@ -20,18 +20,17 @@ export interface DateFormatterOptions {
 
 /**
  * Use when you need to display only the date portion of a Temporal value.
- * Uses `@js-temporal/polyfill`'s `Intl` rather than native `Intl` because only
- * the polyfill's formatter understands Temporal types.
+ * Uses `@js-temporal/polyfill`'s `Intl` rather than native `Intl` till full adoption.
  *
- * Compatible with {@link import('@js-temporal/polyfill').Temporal.PlainDate Temporal.PlainDate}, {@link import('@js-temporal/polyfill').Temporal.PlainDateTime Temporal.PlainDateTime}, and
- * {@link import('@js-temporal/polyfill').Temporal.ZonedDateTime Temporal.ZonedDateTime} (date portion only).
+ * Compatible with: {@link import('@js-temporal/polyfill').Temporal.PlainDate Temporal.PlainDate} or
+ * {@link import('@js-temporal/polyfill').Temporal.PlainDateTime Temporal.PlainDateTime}
  *
  * @param options - Optional date and locale format options.
  * @returns A {@link TemporalIntl.DateTimeFormat} instance configured for date-only output.
- * @see {@link buildTimeFormatter}
- * @see {@link buildDateTimeFormatter}
+ * @see {@link buildPlainTimeFormatter}
+ * @see {@link buildInstantFormatter}
  */
-export function buildDateFormatter(options?: Partial<DateFormatterOptions> & Partial<LocaleOptions>) {
+export function buildPlainDateFormatter(options?: Partial<PlainDateFormatterOptions> & Partial<LocaleOptions>) {
   return new TemporalIntl.DateTimeFormat(options?.locale ?? getDefaultLocale(), {
     year: options?.year ?? 'numeric',
     month: options?.month ?? '2-digit',
@@ -42,7 +41,7 @@ export function buildDateFormatter(options?: Partial<DateFormatterOptions> & Par
 /**
  * Time portion of the {@link TemporalIntl.DateTimeFormat}, all fields required.
  */
-export interface TimeFormatterOptions {
+export interface PlainTimeFormatterOptions {
   hour: NonNullable<Intl.DateTimeFormatOptions['hour']>;
   minute: NonNullable<Intl.DateTimeFormatOptions['minute']>;
   second: NonNullable<Intl.DateTimeFormatOptions['second']>;
@@ -50,19 +49,17 @@ export interface TimeFormatterOptions {
 
 /**
  * Use when you need to display only the time portion of a Temporal value.
- * Uses `@js-temporal/polyfill`'s `Intl` rather than native `Intl` because only
- * the polyfill's formatter understands Temporal types.
+ * Uses `@js-temporal/polyfill`'s `Intl` rather than native `Intl` till full adoption.
  *
- * Compatible with {@link import('@js-temporal/polyfill').Temporal.PlainTime Temporal.PlainTime} and {@link import('@js-temporal/polyfill').Temporal.PlainDateTime Temporal.PlainDateTime}. Do **not**
- * use for {@link import('@js-temporal/polyfill').Temporal.ZonedDateTime Temporal.ZonedDateTime} as that needs timeZone information - use
- * {@link buildDateTimeFormatter} instead.
+ * Compatible with: {@link import('@js-temporal/polyfill').Temporal.PlainTime Temporal.PlainTime} or
+ * {@link import('@js-temporal/polyfill').Temporal.PlainDateTime Temporal.PlainDateTime}
  *
- * @param options - Optional date and locale format options.
+ * @param options - Optional time and locale format options.
  * @returns A {@link TemporalIntl.DateTimeFormat} instance configured for time-only output.
- * @see {@link buildDateFormatter}
- * @see {@link buildDateTimeFormatter}
+ * @see {@link buildPlainDateFormatter}
+ * @see {@link buildInstantFormatter}
  */
-export function buildTimeFormatter(options?: Partial<TimeFormatterOptions> & Partial<LocaleOptions>) {
+export function buildPlainTimeFormatter(options?: Partial<PlainTimeFormatterOptions> & Partial<LocaleOptions>) {
   return new TemporalIntl.DateTimeFormat(options?.locale ?? getDefaultLocale(), {
     hour: options?.hour ?? '2-digit',
     minute: options?.minute ?? '2-digit',
@@ -71,32 +68,34 @@ export function buildTimeFormatter(options?: Partial<TimeFormatterOptions> & Par
 }
 
 /**
- * Controls how the IANA time zone abbreviation is rendered in
- * {@link TemporalIntl.DateTimeFormat} output. Required by {@link buildDateTimeFormatter}
- * to guarantee the zone is always visible when formatting a
- * {@link import('@js-temporal/polyfill').Temporal.ZonedDateTime Temporal.ZonedDateTime}.
+ * Time Zone Display portion of the {@link TemporalIntl.DateTimeFormat}, all fields required.
  */
 export interface TimeZoneNameFormatterOptions {
   timeZoneName: NonNullable<Intl.DateTimeFormatOptions['timeZoneName']>;
 }
 
 /**
- * Use when you need to display both date and time alongside the time zone for a
- * {@link import('@js-temporal/polyfill').Temporal.ZonedDateTime Temporal.ZonedDateTime}. Uses `@js-temporal/polyfill`'s `Intl` rather than
- * native `Intl` because only the polyfill's formatter understands Temporal types.
- *
- * Since this needs zone information this is **only** compatible with {@link import('@js-temporal/polyfill').Temporal.ZonedDateTime Temporal.ZonedDateTime}. Passing other
- * types like {@link import('@js-temporal/polyfill').Temporal.PlainDateTime Temporal.PlainDateTime}, {@link import('@js-temporal/polyfill').Temporal.PlainDate Temporal.PlainDate} or {@link import('@js-temporal/polyfill').Temporal.PlainTime Temporal.PlainTime} will throw
- * a `TypeError` while formatting at runtime.
- *
- * @param options - Optional date and locale format options.
- * @returns A {@link TemporalIntl.DateTimeFormat} instance configured for time-only output.
- * @see {@link buildDateFormatter}
- * @see {@link buildDateTimeFormatter}
+ * IANA Time Zone portion of the {@link TemporalIntl.DateTimeFormat}, all fields required.
  */
-export function buildDateTimeFormatter(
-  options?: Partial<DateFormatterOptions> &
-    Partial<TimeFormatterOptions> &
+export interface TimeZoneFormatterOptions {
+  timeZone: NonNullable<Intl.DateTimeFormatOptions['timeZone']>;
+}
+
+/**
+ * Use when you need to display the date-time portion of a {@link import('@js-temporal/polyfill').Temporal.Instant Temporal.Instant} value.
+ * Uses `@js-temporal/polyfill`'s `Intl` rather than native `Intl` till full adoption.
+ *
+ * Compatible with: {@link import('@js-temporal/polyfill').Temporal.Instant Temporal.Instant} only.
+ *
+ * @param options - Required timeZone option and optional date/time and locale format options
+ * @returns A {@link TemporalIntl.DateTimeFormat} instance configured for date-time-zone output.
+ * @see {@link buildPlainDateFormatter}
+ * @see {@link buildPlainTimeFormatter}
+ */
+export function buildInstantFormatter(
+  options: TimeZoneFormatterOptions &
+    Partial<PlainDateFormatterOptions> &
+    Partial<PlainTimeFormatterOptions> &
     Partial<TimeZoneNameFormatterOptions> &
     Partial<LocaleOptions>,
 ) {
@@ -108,5 +107,6 @@ export function buildDateTimeFormatter(
     minute: options?.minute ?? '2-digit',
     second: options?.second ?? '2-digit',
     timeZoneName: options?.timeZoneName ?? 'short',
+    timeZone: options.timeZone,
   });
 }
