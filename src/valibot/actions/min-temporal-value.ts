@@ -1,8 +1,8 @@
 import type { BaseIssue, ErrorMessage, BaseValidation } from 'valibot';
+import { Temporal } from '@js-temporal/polyfill';
 import { _addIssue } from 'valibot';
 
 import type { TemporalValueInput } from './types';
-import {Temporal} from "@js-temporal/polyfill";
 
 /**
  * Temporal min value issue interface.
@@ -79,19 +79,7 @@ export function temporalMinValue(
       if (typed) {
         const req = this.requirement;
 
-        if (value instanceof Temporal.Duration) {
-          if (req instanceof Temporal.Duration) {
-            if (!(Temporal.Duration.compare(value, req) >= 0)) {
-              _addIssue(this, 'value', dataset, config, {
-                received: dataset.value.toJSON(),
-              });
-            }
-          } else {
-            _addIssue(this, 'requirement', dataset, config, {
-              received: dataset.value.toJSON(),
-            });
-          }
-        } else if (value instanceof Temporal.ZonedDateTime) {
+        if (value instanceof Temporal.ZonedDateTime) {
           if (req instanceof Temporal.ZonedDateTime) {
             if (!(Temporal.ZonedDateTime.compare(value, req) >= 0)) {
               _addIssue(this, 'value', dataset, config, {
@@ -151,6 +139,13 @@ export function temporalMinValue(
               received: dataset.value.toJSON(),
             });
           }
+        } else {
+          // Defensive: every member of TemporalValueInput is handled above. This only
+          // triggers if `dataset.typed` was set true without `value` actually being one
+          // of those types (e.g. a mismatched upstream schema).
+          _addIssue(this, 'value', dataset, config, {
+            received: dataset.value.toJSON(),
+          });
         }
       }
 

@@ -9,7 +9,7 @@ import type { TemporalValueInput } from './types';
  */
 export interface TemporalMaxValueIssue<
   TInput extends TemporalValueInput,
-  TRequirement extends TemporalValueInput,
+  TRequirement extends TInput,
 > extends BaseIssue<TInput> {
   kind: 'validation';
   type: 'temporal_max_value';
@@ -22,7 +22,7 @@ export interface TemporalMaxValueIssue<
  */
 export interface TemporalMaxValueAction<
   TInput extends TemporalValueInput,
-  TRequirement extends TemporalValueInput,
+  TRequirement extends TInput,
   TMessage extends ErrorMessage<TemporalMaxValueIssue<TInput, TRequirement>> | undefined,
 > extends BaseValidation<TInput, TInput, TemporalMaxValueIssue<TInput, TRequirement>> {
   type: 'temporal_max_value';
@@ -79,19 +79,7 @@ export function temporalMaxValue(
       if (typed) {
         const req = this.requirement;
 
-        if (value instanceof Temporal.Duration) {
-          if (req instanceof Temporal.Duration) {
-            if (!(Temporal.Duration.compare(value, req) <= 0)) {
-              _addIssue(this, 'value', dataset, config, {
-                received: dataset.value.toJSON(),
-              });
-            }
-          } else {
-            _addIssue(this, 'requirement', dataset, config, {
-              received: dataset.value.toJSON(),
-            });
-          }
-        } else if (value instanceof Temporal.ZonedDateTime) {
+        if (value instanceof Temporal.ZonedDateTime) {
           if (req instanceof Temporal.ZonedDateTime) {
             if (!(Temporal.ZonedDateTime.compare(value, req) <= 0)) {
               _addIssue(this, 'value', dataset, config, {
@@ -151,6 +139,13 @@ export function temporalMaxValue(
               received: dataset.value.toJSON(),
             });
           }
+        } else {
+          // Defensive: every member of TemporalValueInput is handled above. This only
+          // triggers if `dataset.typed` was set true without `value` actually being one
+          // of those types (e.g. a mismatched upstream schema).
+          _addIssue(this, 'value', dataset, config, {
+            received: dataset.value.toJSON(),
+          });
         }
       }
 
