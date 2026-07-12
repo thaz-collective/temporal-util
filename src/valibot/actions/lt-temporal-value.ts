@@ -4,7 +4,7 @@ import { _addIssue } from 'valibot';
 import type { TemporalValueInput } from './types';
 
 /**
- * Less than value issue interface.
+ * Temporal less than value issue interface.
  */
 export interface TemporalLTValueIssue<
   TInput extends TemporalValueInput,
@@ -17,7 +17,7 @@ export interface TemporalLTValueIssue<
 }
 
 /**
- * Less than value action type.
+ * Temporal less than value action type.
  */
 export interface TemporalLTValueAction<
   TInput extends TemporalValueInput,
