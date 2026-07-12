@@ -1,4 +1,5 @@
 import type { BaseIssue, ErrorMessage, BaseValidation } from 'valibot';
+import { Temporal } from '@js-temporal/polyfill';
 import { _addIssue } from 'valibot';
 
 import type { TemporalValueInput } from './types';
@@ -6,7 +7,7 @@ import type { TemporalValueInput } from './types';
 /**
  * Temporal greater than value issue interface.
  */
-export interface TemporalLTValueIssue<
+export interface TemporalGTValueIssue<
   TInput extends TemporalValueInput,
   TRequirement extends TInput,
 > extends BaseIssue<TInput> {
@@ -19,13 +20,13 @@ export interface TemporalLTValueIssue<
 /**
  * Temporal greater than value action type.
  */
-export interface TemporalLTValueAction<
+export interface TemporalGTValueAction<
   TInput extends TemporalValueInput,
   TRequirement extends TInput,
-  TMessage extends ErrorMessage<TemporalLTValueIssue<TInput, TRequirement>> | undefined,
-> extends BaseValidation<TInput, TInput, TemporalLTValueIssue<TInput, TRequirement>> {
+  TMessage extends ErrorMessage<TemporalGTValueIssue<TInput, TRequirement>> | undefined,
+> extends BaseValidation<TInput, TInput, TemporalGTValueIssue<TInput, TRequirement>> {
   type: 'temporal_gt_value';
-  reference: typeof temporalLTValue;
+  reference: typeof temporalGTValue;
   expects: `>${string}`;
   requirement: TRequirement;
   message: TMessage;
@@ -38,9 +39,9 @@ export interface TemporalLTValueAction<
  *
  * @returns A greater than value action.
  */
-export function temporalLTValue<TInput extends TemporalValueInput, const TRequirement extends TInput>(
+export function temporalGTValue<TInput extends TemporalValueInput, const TRequirement extends TInput>(
   requirement: TRequirement,
-): TemporalLTValueAction<TInput, TRequirement, undefined>;
+): TemporalGTValueAction<TInput, TRequirement, undefined>;
 
 /**
  * Creates a temporal greater than value validation action.
@@ -50,24 +51,24 @@ export function temporalLTValue<TInput extends TemporalValueInput, const TRequir
  *
  * @returns A greater than value action.
  */
-export function temporalLTValue<
+export function temporalGTValue<
   TInput extends TemporalValueInput,
   const TRequirement extends TInput,
-  const TMessage extends ErrorMessage<TemporalLTValueIssue<TInput, TRequirement>> | undefined,
->(requirement: TRequirement, message: TMessage): TemporalLTValueAction<TInput, TRequirement, TMessage>;
+  const TMessage extends ErrorMessage<TemporalGTValueIssue<TInput, TRequirement>> | undefined,
+>(requirement: TRequirement, message: TMessage): TemporalGTValueAction<TInput, TRequirement, TMessage>;
 
-export function temporalLTValue(
+export function temporalGTValue(
   requirement: TemporalValueInput,
-  message?: ErrorMessage<TemporalLTValueIssue<TemporalValueInput, TemporalValueInput>>,
-): TemporalLTValueAction<
+  message?: ErrorMessage<TemporalGTValueIssue<TemporalValueInput, TemporalValueInput>>,
+): TemporalGTValueAction<
   TemporalValueInput,
   TemporalValueInput,
-  ErrorMessage<TemporalLTValueIssue<TemporalValueInput, TemporalValueInput>> | undefined
+  ErrorMessage<TemporalGTValueIssue<TemporalValueInput, TemporalValueInput>> | undefined
 > {
   return {
     kind: 'validation',
     type: 'temporal_gt_value',
-    reference: temporalLTValue,
+    reference: temporalGTValue,
     async: false,
     expects: `>${requirement.toJSON()}`,
     requirement,
@@ -78,7 +79,70 @@ export function temporalLTValue(
       if (typed) {
         const req = this.requirement;
 
-        if (!(value > req)) {
+        if (value instanceof Temporal.ZonedDateTime) {
+          if (req instanceof Temporal.ZonedDateTime) {
+            if (!(Temporal.ZonedDateTime.compare(value, req) > 0)) {
+              _addIssue(this, 'value', dataset, config, {
+                received: dataset.value.toJSON(),
+              });
+            }
+          } else {
+            _addIssue(this, 'requirement', dataset, config, {
+              received: dataset.value.toJSON(),
+            });
+          }
+        } else if (value instanceof Temporal.Instant) {
+          if (req instanceof Temporal.Instant) {
+            if (!(Temporal.Instant.compare(value, req) > 0)) {
+              _addIssue(this, 'value', dataset, config, {
+                received: dataset.value.toJSON(),
+              });
+            }
+          } else {
+            _addIssue(this, 'requirement', dataset, config, {
+              received: dataset.value.toJSON(),
+            });
+          }
+        } else if (value instanceof Temporal.PlainDateTime) {
+          if (req instanceof Temporal.PlainDateTime) {
+            if (!(Temporal.PlainDateTime.compare(value, req) > 0)) {
+              _addIssue(this, 'value', dataset, config, {
+                received: dataset.value.toJSON(),
+              });
+            }
+          } else {
+            _addIssue(this, 'requirement', dataset, config, {
+              received: dataset.value.toJSON(),
+            });
+          }
+        } else if (value instanceof Temporal.PlainDate) {
+          if (req instanceof Temporal.PlainDate) {
+            if (!(Temporal.PlainDate.compare(value, req) > 0)) {
+              _addIssue(this, 'value', dataset, config, {
+                received: dataset.value.toJSON(),
+              });
+            }
+          } else {
+            _addIssue(this, 'requirement', dataset, config, {
+              received: dataset.value.toJSON(),
+            });
+          }
+        } else if (value instanceof Temporal.PlainTime) {
+          if (req instanceof Temporal.PlainTime) {
+            if (!(Temporal.PlainTime.compare(value, req) > 0)) {
+              _addIssue(this, 'value', dataset, config, {
+                received: dataset.value.toJSON(),
+              });
+            }
+          } else {
+            _addIssue(this, 'requirement', dataset, config, {
+              received: dataset.value.toJSON(),
+            });
+          }
+        } else {
+          // Defensive: every member of TemporalValueInput is handled above. This only
+          // triggers if `dataset.typed` was set true without `value` actually being one
+          // of those types (e.g. a mismatched upstream schema).
           _addIssue(this, 'value', dataset, config, {
             received: dataset.value.toJSON(),
           });

@@ -1,4 +1,5 @@
 import type { BaseIssue, ErrorMessage, BaseValidation } from 'valibot';
+import { Temporal } from '@js-temporal/polyfill';
 import { _addIssue } from 'valibot';
 
 import type { TemporalValueInput } from './types';
@@ -78,7 +79,70 @@ export function temporalLTValue(
       if (typed) {
         const req = this.requirement;
 
-        if (!(value < req)) {
+        if (value instanceof Temporal.ZonedDateTime) {
+          if (req instanceof Temporal.ZonedDateTime) {
+            if (!(Temporal.ZonedDateTime.compare(value, req) < 0)) {
+              _addIssue(this, 'value', dataset, config, {
+                received: dataset.value.toJSON(),
+              });
+            }
+          } else {
+            _addIssue(this, 'requirement', dataset, config, {
+              received: dataset.value.toJSON(),
+            });
+          }
+        } else if (value instanceof Temporal.Instant) {
+          if (req instanceof Temporal.Instant) {
+            if (!(Temporal.Instant.compare(value, req) < 0)) {
+              _addIssue(this, 'value', dataset, config, {
+                received: dataset.value.toJSON(),
+              });
+            }
+          } else {
+            _addIssue(this, 'requirement', dataset, config, {
+              received: dataset.value.toJSON(),
+            });
+          }
+        } else if (value instanceof Temporal.PlainDateTime) {
+          if (req instanceof Temporal.PlainDateTime) {
+            if (!(Temporal.PlainDateTime.compare(value, req) < 0)) {
+              _addIssue(this, 'value', dataset, config, {
+                received: dataset.value.toJSON(),
+              });
+            }
+          } else {
+            _addIssue(this, 'requirement', dataset, config, {
+              received: dataset.value.toJSON(),
+            });
+          }
+        } else if (value instanceof Temporal.PlainDate) {
+          if (req instanceof Temporal.PlainDate) {
+            if (!(Temporal.PlainDate.compare(value, req) < 0)) {
+              _addIssue(this, 'value', dataset, config, {
+                received: dataset.value.toJSON(),
+              });
+            }
+          } else {
+            _addIssue(this, 'requirement', dataset, config, {
+              received: dataset.value.toJSON(),
+            });
+          }
+        } else if (value instanceof Temporal.PlainTime) {
+          if (req instanceof Temporal.PlainTime) {
+            if (!(Temporal.PlainTime.compare(value, req) < 0)) {
+              _addIssue(this, 'value', dataset, config, {
+                received: dataset.value.toJSON(),
+              });
+            }
+          } else {
+            _addIssue(this, 'requirement', dataset, config, {
+              received: dataset.value.toJSON(),
+            });
+          }
+        } else {
+          // Defensive: every member of TemporalValueInput is handled above. This only
+          // triggers if `dataset.typed` was set true without `value` actually being one
+          // of those types (e.g. a mismatched upstream schema).
           _addIssue(this, 'value', dataset, config, {
             received: dataset.value.toJSON(),
           });
