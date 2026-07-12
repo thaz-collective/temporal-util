@@ -17,6 +17,9 @@ export default defineConfig({
       build: {
         command: 'vp pack',
       },
+      test: {
+        command: 'vp test',
+      },
       check: {
         command: 'vp check',
       },
@@ -25,9 +28,6 @@ export default defineConfig({
       },
       lint: {
         command: 'vp lint',
-      },
-      typecheck: {
-        command: 'vp check --no-fmt --no-lint',
       },
     },
   },
@@ -63,6 +63,38 @@ export default defineConfig({
         },
       },
     },
+  },
+  test: {
+    coverage: {
+      enabled: true,
+      include: ['src/**/*.ts'],
+      provider: 'istanbul',
+      thresholds: {
+        branches: 80,
+        functions: 80,
+        lines: 80,
+        statements: 80,
+      },
+    },
+    projects: [
+      {
+        extends: true,
+        test: {
+          name: 'node',
+          include: ['test/**/*.node.test.ts'],
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: 'types',
+          include: ['test/**/*.test-d.ts'],
+          typecheck: {
+            enabled: true,
+          },
+        },
+      },
+    ],
   },
   fmt: oxfmtConfig,
   lint: {
