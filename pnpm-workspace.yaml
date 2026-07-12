@@ -1,0 +1,34 @@
+blockExoticSubdeps: true
+
+catalog:
+  '@js-temporal/polyfill': 0.5.1
+  '@thaz/oxfmt-config': 1.0.0-rc.1
+  '@thaz/oxlint-config': 1.0.0-rc.1
+  '@thaz/typescript-config': 1.0.0-rc.1
+  '@types/node': 24.13.2
+  '@vitest/coverage-istanbul': 4.1.10
+  '@vitest/ui': 4.1.10
+  typescript: 6.0.3
+  valibot: 1.4.2
+  vite: npm:@voidzero-dev/vite-plus-core@0.2.4
+  vite-plugin-externalize-deps: 0.10.0
+  vite-plus: 0.2.4
+  vitest: 4.1.10
+
+catalogMode: prefer
+# Watch this issue: https://github.com/pnpm/pnpm/issues/11238
+minimumReleaseAge: 4320 # 3 days just to be safe with the uptick of supply chain attacks
+
+minimumReleaseAgeExclude:
+  - '@thaz/typescript-config@1.0.0-rc.1'
+  - '@thaz/oxfmt-config@1.0.0-rc.1'
+  - '@thaz/oxlint-config@1.0.0-rc.1'
+
+overrides:
+  vite: 'catalog:'
+
+peerDependencyRules:
+  allowAny:
+    - vite
+  allowedVersions:
+    vite: '*'
