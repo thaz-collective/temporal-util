@@ -1,1 +1,1 @@
-export const TMP = 5;
+export * from './schema';
