@@ -103,14 +103,12 @@ export function temporalNotValue(
               received: dataset.value.toJSON(),
             });
           }
-        } else if (value instanceof Temporal.PlainTime && req instanceof Temporal.PlainTime) {
-          if (Temporal.PlainTime.compare(value, req) === 0) {
-            _addIssue(this, 'value', dataset, config, {
-              received: dataset.value.toJSON(),
-            });
-          }
-        } else {
-          _addIssue(this, 'requirement/value pair', dataset, config, {
+        } else if (
+          value instanceof Temporal.PlainTime &&
+          req instanceof Temporal.PlainTime &&
+          Temporal.PlainTime.compare(value, req) === 0
+        ) {
+          _addIssue(this, 'value', dataset, config, {
             received: dataset.value.toJSON(),
           });
         }
