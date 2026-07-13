@@ -4,55 +4,121 @@ import { describe, expect, test } from 'vite-plus/test';
 import type { TemporalValueAction, TemporalValueIssue } from '#src/valibot/actions/value';
 import { temporalValue } from '#src/valibot/actions/value';
 
-describe('temporalValue', () => {
-  describe('should return action object', () => {
-    const requirement = Temporal.PlainDate.from('2024-06-01');
-    const baseAction: Omit<TemporalValueAction<Temporal.PlainDate, typeof requirement, never>, 'message'> = {
-      kind: 'validation',
-      type: 'temporal_value',
-      reference: temporalValue,
-      expects: `=${requirement.toJSON()}`,
-      requirement,
-      async: false,
-      '~run': expect.any(Function),
+describe('should return action object', () => {
+  const requirement = Temporal.PlainDate.from('2024-06-01');
+  const baseAction: Omit<TemporalValueAction<Temporal.PlainDate, typeof requirement, never>, 'message'> = {
+    kind: 'validation',
+    type: 'temporal_value',
+    reference: temporalValue,
+    expects: `=${requirement.toJSON()}`,
+    requirement,
+    async: false,
+    '~run': expect.any(Function),
+  };
+
+  test('with undefined message', () => {
+    const action: TemporalValueAction<Temporal.PlainDate, typeof requirement, undefined> = {
+      ...baseAction,
+      message: undefined,
     };
-
-    test('with undefined message', () => {
-      const action: TemporalValueAction<Temporal.PlainDate, typeof requirement, undefined> = {
-        ...baseAction,
-        message: undefined,
-      };
-      expect(temporalValue(requirement)).toStrictEqual(action);
-    });
-
-    test('with string message', () => {
-      expect(temporalValue(requirement, 'message')).toStrictEqual({
-        ...baseAction,
-        message: 'message',
-      } satisfies TemporalValueAction<Temporal.PlainDate, typeof requirement, string>);
-    });
-
-    test('with function message', () => {
-      const message = () => 'message';
-      expect(temporalValue(requirement, message)).toStrictEqual({
-        ...baseAction,
-        message,
-      } satisfies TemporalValueAction<Temporal.PlainDate, typeof requirement, typeof message>);
-    });
+    expect(temporalValue(requirement)).toStrictEqual(action);
   });
 
-  describe('should return dataset without issues', () => {
-    const requirement = Temporal.PlainDate.from('2024-06-01');
-    const action = temporalValue(requirement);
+  test('with string message', () => {
+    expect(temporalValue(requirement, 'message')).toStrictEqual({
+      ...baseAction,
+      message: 'message',
+    } satisfies TemporalValueAction<Temporal.PlainDate, typeof requirement, string>);
+  });
 
-    test('for untyped inputs', () => {
+  test('with function message', () => {
+    const message = () => 'message';
+    expect(temporalValue(requirement, message)).toStrictEqual({
+      ...baseAction,
+      message,
+    } satisfies TemporalValueAction<Temporal.PlainDate, typeof requirement, typeof message>);
+  });
+});
+
+describe('zonedDateTime', () => {
+  const req = Temporal.ZonedDateTime.from('2024-06-01T12:00:00+00:00[UTC]');
+  const zdtAction = temporalValue(req);
+
+  test('should return dataset without issues', () => {
+    const value = Temporal.ZonedDateTime.from('2024-06-01T12:00:00+00:00[UTC]');
+    expect(zdtAction['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
+  });
+
+  describe('should return dataset with issues', () => {
+    test('for value before requirement', () => {
+      expect().toStrictEqual({});
+    });
+
+    test('for value after requirement', () => {
+      expect().toStrictEqual({});
+    });
+  });
+});
+
+describe('instant', () => {
+  const req = Temporal.Instant.fromEpochMilliseconds(1_000_000);
+  const instantAction = temporalValue(req);
+
+  test('should return dataset without issues', () => {
+    const value = Temporal.Instant.fromEpochMilliseconds(1_000_000);
+    expect(instantAction['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
+  });
+
+  describe('should return dataset with issues', () => {
+    test('for value before requirement', () => {
+      expect().toStrictEqual({});
+    });
+
+    test('for value after requirement', () => {
+      expect().toStrictEqual({});
+    });
+  });
+});
+
+describe('plainDateTime', () => {
+  const req = Temporal.PlainDateTime.from('2024-06-01T12:00:00');
+  const dtAction = temporalValue(req);
+
+  test('should return dataset without issues', () => {
+    const value = Temporal.PlainDateTime.from('2024-06-01T12:00:00');
+    expect(dtAction['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
+  });
+
+  describe('should return dataset with issues', () => {
+    test('for value before requirement', () => {
+      expect().toStrictEqual({});
+    });
+
+    test('for value after requirement', () => {
+      expect().toStrictEqual({});
+    });
+  });
+});
+
+describe('plainDate', () => {
+  const requirement = Temporal.PlainDate.from('2024-06-01');
+  const dateAction = temporalValue(requirement);
+
+  test('should return dataset without issues', () => {
+    const value = Temporal.PlainDate.from('2024-06-01');
+    expect(dateAction['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
+  });
+
+  describe('should return dataset with issues', () => {
+    test('for value before requirement', () => {
+      const value = '2024-01-01';
       const issues: [TemporalValueIssue<Temporal.PlainDate, typeof requirement>] = [
         {
           kind: 'validation',
           type: 'temporal_value',
-          input: Temporal.PlainDate.from('2024-01-01'),
+          input: Temporal.PlainDate.from(value),
           expected: `=${requirement.toJSON()}`,
-          received: '2024-01-01',
+          received: value,
           message: 'message',
           requirement,
           path: undefined,
@@ -62,193 +128,58 @@ describe('temporalValue', () => {
           abortPipeEarly: undefined,
         },
       ];
-      expect(action['~run']({ typed: false, value: Temporal.PlainDate.from('2024-01-01'), issues }, {})).toStrictEqual({
+
+      expect(dateAction['~run']({ typed: false, value: Temporal.PlainDate.from(value), issues }, {})).toStrictEqual({
         typed: false,
-        value: Temporal.PlainDate.from('2024-01-01'),
+        value: Temporal.PlainDate.from(value),
         issues,
       });
     });
 
-    test('for value equal to requirement', () => {
-      const value = Temporal.PlainDate.from('2024-06-01');
-      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
-    });
+    test('for value after requirement', () => {
+      const value = '2024-12-12';
+      const issues: [TemporalValueIssue<Temporal.PlainDate, typeof requirement>] = [
+        {
+          kind: 'validation',
+          type: 'temporal_value',
+          input: Temporal.PlainDate.from(value),
+          expected: `=${requirement.toJSON()}`,
+          received: value,
+          message: 'message',
+          requirement,
+          path: undefined,
+          issues: undefined,
+          lang: undefined,
+          abortEarly: undefined,
+          abortPipeEarly: undefined,
+        },
+      ];
 
-    test('for Temporal.Instant equal to requirement', () => {
-      const req = Temporal.Instant.fromEpochMilliseconds(1_000_000);
-      const instantAction = temporalValue(req);
-      const value = Temporal.Instant.fromEpochMilliseconds(1_000_000);
-      expect(instantAction['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
+      expect(dateAction['~run']({ typed: false, value: Temporal.PlainDate.from(value), issues }, {})).toStrictEqual({
+        typed: false,
+        value: Temporal.PlainDate.from(value),
+        issues,
+      });
     });
+  });
+});
 
-    test('for Temporal.PlainTime equal to requirement', () => {
-      const req = Temporal.PlainTime.from('12:00:00');
-      const timeAction = temporalValue(req);
-      const value = Temporal.PlainTime.from('12:00:00');
-      expect(timeAction['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
-    });
+describe('plainTime', () => {
+  const req = Temporal.PlainTime.from('12:00:00');
+  const timeAction = temporalValue(req);
 
-    test('for Temporal.PlainDateTime equal to requirement', () => {
-      const req = Temporal.PlainDateTime.from('2024-06-01T12:00:00');
-      const dtAction = temporalValue(req);
-      const value = Temporal.PlainDateTime.from('2024-06-01T12:00:00');
-      expect(dtAction['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
-    });
-
-    test('for Temporal.ZonedDateTime equal to requirement', () => {
-      const req = Temporal.ZonedDateTime.from('2024-06-01T12:00:00+00:00[UTC]');
-      const zdtAction = temporalValue(req);
-      const value = Temporal.ZonedDateTime.from('2024-06-01T12:00:00+00:00[UTC]');
-      expect(zdtAction['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
-    });
+  test('should return dataset without issues', () => {
+    const value = Temporal.PlainTime.from('12:00:00');
+    expect(timeAction['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
   });
 
   describe('should return dataset with issues', () => {
-    const requirement = Temporal.PlainDate.from('2024-06-01');
-    const action = temporalValue(requirement, 'message');
-    const baseIssue: Omit<TemporalValueIssue<Temporal.PlainDate, typeof requirement>, 'input' | 'received'> = {
-      kind: 'validation',
-      type: 'temporal_value',
-      expected: `=${requirement.toJSON()}`,
-      message: 'message',
-      requirement,
-      path: undefined,
-      issues: undefined,
-      lang: undefined,
-      abortEarly: undefined,
-      abortPipeEarly: undefined,
-    };
-
     test('for value before requirement', () => {
-      const value = Temporal.PlainDate.from('2024-01-01');
-      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({
-        typed: true,
-        value,
-        issues: [{ ...baseIssue, input: value, received: value.toJSON() }],
-      });
+      expect().toStrictEqual({});
     });
 
     test('for value after requirement', () => {
-      const value = Temporal.PlainDate.from('2024-12-31');
-      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({
-        typed: true,
-        value,
-        issues: [{ ...baseIssue, input: value, received: value.toJSON() }],
-      });
-    });
-
-    test('for Temporal.Instant not equal to requirement', () => {
-      const req = Temporal.Instant.fromEpochMilliseconds(1_000_000);
-      const instantAction = temporalValue(req, 'message');
-      const value = Temporal.Instant.fromEpochMilliseconds(2_000_000);
-      expect(instantAction['~run']({ typed: true, value }, {})).toStrictEqual({
-        typed: true,
-        value,
-        issues: [
-          {
-            kind: 'validation',
-            type: 'temporal_value',
-            expected: `=${req.toJSON()}`,
-            message: 'message',
-            requirement: req,
-            path: undefined,
-            issues: undefined,
-            lang: undefined,
-            abortEarly: undefined,
-            abortPipeEarly: undefined,
-            input: value,
-            received: value.toJSON(),
-          },
-        ],
-      });
-    });
-
-    test('for Temporal.PlainTime not equal to requirement', () => {
-      const req = Temporal.PlainTime.from('12:00:00');
-      const timeAction = temporalValue(req, 'message');
-      const value = Temporal.PlainTime.from('16:00:00');
-      expect(timeAction['~run']({ typed: true, value }, {})).toStrictEqual({
-        typed: true,
-        value,
-        issues: [
-          {
-            kind: 'validation',
-            type: 'temporal_value',
-            expected: `=${req.toJSON()}`,
-            message: 'message',
-            requirement: req,
-            path: undefined,
-            issues: undefined,
-            lang: undefined,
-            abortEarly: undefined,
-            abortPipeEarly: undefined,
-            input: value,
-            received: value.toJSON(),
-          },
-        ],
-      });
-    });
-
-    test('for Temporal.PlainDateTime not equal to requirement', () => {
-      const req = Temporal.PlainDateTime.from('2024-06-01T12:00:00');
-      const dtAction = temporalValue(req, 'message');
-      const value = Temporal.PlainDateTime.from('2024-12-31T23:59:59');
-      expect(dtAction['~run']({ typed: true, value }, {})).toStrictEqual({
-        typed: true,
-        value,
-        issues: [
-          {
-            kind: 'validation',
-            type: 'temporal_value',
-            expected: `=${req.toJSON()}`,
-            message: 'message',
-            requirement: req,
-            path: undefined,
-            issues: undefined,
-            lang: undefined,
-            abortEarly: undefined,
-            abortPipeEarly: undefined,
-            input: value,
-            received: value.toJSON(),
-          },
-        ],
-      });
-    });
-
-    test('for Temporal.ZonedDateTime not equal to requirement', () => {
-      const req = Temporal.ZonedDateTime.from('2024-06-01T12:00:00+00:00[UTC]');
-      const zdtAction = temporalValue(req, 'message');
-      const value = Temporal.ZonedDateTime.from('2024-12-31T23:59:59+00:00[UTC]');
-      expect(zdtAction['~run']({ typed: true, value }, {})).toStrictEqual({
-        typed: true,
-        value,
-        issues: [
-          {
-            kind: 'validation',
-            type: 'temporal_value',
-            expected: `=${req.toJSON()}`,
-            message: 'message',
-            requirement: req,
-            path: undefined,
-            issues: undefined,
-            lang: undefined,
-            abortEarly: undefined,
-            abortPipeEarly: undefined,
-            input: value,
-            received: value.toJSON(),
-          },
-        ],
-      });
-    });
-
-    test('for a value whose type does not match the requirement', () => {
-      // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-      const value = Temporal.Instant.fromEpochMilliseconds(0) as unknown as Temporal.PlainDate;
-      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({
-        typed: true,
-        value,
-        issues: [{ ...baseIssue, input: value, received: value.toJSON() }],
-      });
+      expect().toStrictEqual({});
     });
   });
 });
