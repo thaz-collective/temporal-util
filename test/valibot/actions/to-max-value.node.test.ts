@@ -70,5 +70,33 @@ describe('temporalToMaxValue', () => {
       const value = Temporal.PlainDate.from('2024-06-01');
       expect(action['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
     });
+
+    test('for a Temporal.ZonedDateTime before the requirement', () => {
+      const requirement = Temporal.ZonedDateTime.from('2024-06-01T12:00:00+00:00[UTC]');
+      const action = temporalToMaxValue(requirement);
+      const value = Temporal.ZonedDateTime.from('2024-01-01T00:00:00+00:00[UTC]');
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
+    });
+
+    test('for a Temporal.Instant before the requirement', () => {
+      const requirement = Temporal.Instant.fromEpochMilliseconds(2_000_000);
+      const action = temporalToMaxValue(requirement);
+      const value = Temporal.Instant.fromEpochMilliseconds(1_000_000);
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
+    });
+
+    test('for a Temporal.PlainDateTime before the requirement', () => {
+      const requirement = Temporal.PlainDateTime.from('2024-06-01T12:00:00');
+      const action = temporalToMaxValue(requirement);
+      const value = Temporal.PlainDateTime.from('2024-01-01T00:00:00');
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
+    });
+
+    test('for a Temporal.PlainTime before the requirement', () => {
+      const requirement = Temporal.PlainTime.from('12:00:00');
+      const action = temporalToMaxValue(requirement);
+      const value = Temporal.PlainTime.from('08:00:00');
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
+    });
   });
 });

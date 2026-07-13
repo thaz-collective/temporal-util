@@ -2,8 +2,8 @@ import type { InferInput, InferIssue, InferOutput } from 'valibot';
 import { Temporal } from '@js-temporal/polyfill';
 import { describe, expectTypeOf, test } from 'vite-plus/test';
 
-import type { TemporalValuesAction, TemporalValuesIssue } from '#src/valibot/actions/values';
 import type { TemporalValueInput } from '#src/valibot/actions/types';
+import type { TemporalValuesAction, TemporalValuesIssue } from '#src/valibot/actions/values';
 import { temporalValues } from '#src/valibot/actions/values';
 
 describe('temporalValues', () => {

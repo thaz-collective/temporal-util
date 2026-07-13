@@ -240,5 +240,15 @@ describe('temporalGTValue', () => {
         ],
       });
     });
+
+    test('for a value whose type does not match the requirement', () => {
+      // oxlint-disable-next-line typescript/no-unsafe-type-assertion
+      const value = Temporal.Instant.fromEpochMilliseconds(0) as unknown as Temporal.PlainDate;
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({
+        typed: true,
+        value,
+        issues: [{ ...baseIssue, input: value, received: value.toJSON() }],
+      });
+    });
   });
 });

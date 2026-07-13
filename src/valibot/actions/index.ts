@@ -12,7 +12,6 @@ export * from './not-values';
 export * from './to-max-value';
 export * from './to-min-value';
 
-export * from './to-duration-value';
 export * from './to-instant-value';
 export * from './to-plain-date-time-value';
 export * from './to-plain-date-value';

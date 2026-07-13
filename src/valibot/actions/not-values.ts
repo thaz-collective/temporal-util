@@ -3,7 +3,6 @@ import { Temporal } from '@js-temporal/polyfill';
 import { _addIssue } from 'valibot';
 
 import type { TemporalValueInput } from './types';
-import { isSameTemporalType } from './util';
 
 /**
  * Temporal not values issue interface.
@@ -95,15 +94,9 @@ export function temporalNotValues(
         });
 
         if (isExcluded) {
-          if (this.requirement.some((req) => isSameTemporalType(value, req))) {
-            _addIssue(this, 'value', dataset, config, {
-              received: dataset.value.toJSON(),
-            });
-          } else {
-            _addIssue(this, 'requirement/value pair', dataset, config, {
-              received: dataset.value.toJSON(),
-            });
-          }
+          _addIssue(this, 'value', dataset, config, {
+            received: dataset.value.toJSON(),
+          });
         }
       }
 

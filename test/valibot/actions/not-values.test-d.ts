@@ -41,7 +41,9 @@ describe('temporalNotValues', () => {
     });
 
     test('of issue', () => {
-      expectTypeOf<InferIssue<Action>>().toEqualTypeOf<TemporalNotValuesIssue<TemporalValueInput, typeof requirement>>();
+      expectTypeOf<InferIssue<Action>>().toEqualTypeOf<
+        TemporalNotValuesIssue<TemporalValueInput, typeof requirement>
+      >();
     });
   });
 });
