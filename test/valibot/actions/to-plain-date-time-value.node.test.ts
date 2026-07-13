@@ -45,23 +45,42 @@ describe('toPlainDateTime', () => {
     const action = toPlainDateTime();
 
     test('converts a ZonedDateTime ISO string', () => {
-      expect(action['~run']({ typed: true, value: '2024-01-15T10:30:00+00:00[UTC]' }, {})).toStrictEqual({
+      const value = '2024-01-15T10:30:00+00:00[UTC]';
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({
         typed: true,
-        value: Temporal.ZonedDateTime.from('2024-01-15T10:30:00+00:00[UTC]').toPlainDateTime(),
+        value: Temporal.ZonedDateTime.from(value).toPlainDateTime(),
+      });
+    });
+
+    test('converts a ZonedDateTime string with named timezone', () => {
+      const value = '2024-06-15T12:00:00-05:00[America/Chicago]';
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({
+        typed: true,
+        value: Temporal.ZonedDateTime.from(value).toPlainDateTime(),
       });
     });
 
     test('converts a PlainDateTime ISO string', () => {
-      expect(action['~run']({ typed: true, value: '2024-06-15T10:30:00' }, {})).toStrictEqual({
+      const value = '2024-06-15T10:30:00';
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({
         typed: true,
-        value: Temporal.PlainDateTime.from('2024-06-15T10:30:00'),
+        value: Temporal.PlainDateTime.from(value),
       });
     });
 
     test('converts a PlainDateTime string with sub-seconds', () => {
-      expect(action['~run']({ typed: true, value: '2024-01-01T00:00:00.123' }, {})).toStrictEqual({
+      const value = '2024-01-01T00:00:00.123';
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({
         typed: true,
-        value: Temporal.PlainDateTime.from('2024-01-01T00:00:00.123'),
+        value: Temporal.PlainDateTime.from(value),
+      });
+    });
+
+    test('converts a PlainDate ISO string, defaulting the time to midnight', () => {
+      const value = '2024-06-15';
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({
+        typed: true,
+        value: Temporal.PlainDateTime.from(value),
       });
     });
 
@@ -81,6 +100,7 @@ describe('toPlainDateTime', () => {
 
   describe('should return dataset with issues', () => {
     const action = toPlainDateTime('message');
+
     const baseIssue: Omit<ToPlainDateTimeIssue<unknown>, 'input' | 'received'> = {
       kind: 'transformation',
       type: 'to_plain_date_time',
@@ -94,21 +114,11 @@ describe('toPlainDateTime', () => {
       abortPipeEarly: undefined,
     };
 
-    test('for invalid strings', () => {
-      const value = 'not-a-datetime';
-      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({
+    test('for undefined', () => {
+      expect(action['~run']({ typed: true, value: undefined }, {})).toStrictEqual({
         typed: false,
-        value,
-        issues: [{ ...baseIssue, input: value, received: `"${value}"` }],
-      });
-    });
-
-    test('for time-only strings', () => {
-      const value = '14:30:00';
-      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({
-        typed: false,
-        value,
-        issues: [{ ...baseIssue, input: value, received: `"${value}"` }],
+        value: undefined,
+        issues: [{ ...baseIssue, input: undefined, received: '"Invalid conversion option"' }],
       });
     });
 
@@ -117,6 +127,23 @@ describe('toPlainDateTime', () => {
         typed: false,
         value: null,
         issues: [{ ...baseIssue, input: null, received: '"Invalid conversion option"' }],
+      });
+    });
+
+    test('for plain objects', () => {
+      const value = {};
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({
+        typed: false,
+        value,
+        issues: [{ ...baseIssue, input: value, received: '"Invalid conversion option"' }],
+      });
+    });
+
+    test('for NaN', () => {
+      expect(action['~run']({ typed: true, value: Number.NaN }, {})).toStrictEqual({
+        typed: false,
+        value: Number.NaN,
+        issues: [{ ...baseIssue, input: Number.NaN, received: '"Invalid conversion option"' }],
       });
     });
 
@@ -129,8 +156,35 @@ describe('toPlainDateTime', () => {
       });
     });
 
-    test('for Temporal.PlainDate', () => {
-      const value = Temporal.PlainDate.from('2024-01-01');
+    test('for invalid strings', () => {
+      const value = 'not-a-datetime';
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({
+        typed: false,
+        value,
+        issues: [{ ...baseIssue, input: value, received: `"${value}"` }],
+      });
+    });
+
+    test('for instant strings (Z designator not supported)', () => {
+      const value = '2024-06-01T12:00:00Z';
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({
+        typed: false,
+        value,
+        issues: [{ ...baseIssue, input: value, received: `"${value}"` }],
+      });
+    });
+
+    test('for plain time strings', () => {
+      const value = '14:30:00';
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({
+        typed: false,
+        value,
+        issues: [{ ...baseIssue, input: value, received: `"${value}"` }],
+      });
+    });
+
+    test('for Temporal.Instant', () => {
+      const value = Temporal.Instant.fromEpochMilliseconds(0);
       expect(action['~run']({ typed: true, value }, {})).toStrictEqual({
         typed: false,
         value,
@@ -138,8 +192,8 @@ describe('toPlainDateTime', () => {
       });
     });
 
-    test('for Temporal.Instant', () => {
-      const value = Temporal.Instant.fromEpochMilliseconds(0);
+    test('for Temporal.PlainDate', () => {
+      const value = Temporal.PlainDate.from('2024-01-01');
       expect(action['~run']({ typed: true, value }, {})).toStrictEqual({
         typed: false,
         value,

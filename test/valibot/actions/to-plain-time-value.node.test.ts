@@ -45,23 +45,42 @@ describe('toPlainTime', () => {
     const action = toPlainTime();
 
     test('converts a ZonedDateTime ISO string', () => {
-      expect(action['~run']({ typed: true, value: '2024-01-01T10:30:00+00:00[UTC]' }, {})).toStrictEqual({
+      const value = '2024-01-01T10:30:00+00:00[UTC]';
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({
         typed: true,
-        value: Temporal.ZonedDateTime.from('2024-01-01T10:30:00+00:00[UTC]').toPlainTime(),
+        value: Temporal.ZonedDateTime.from(value).toPlainTime(),
+      });
+    });
+
+    test('converts a ZonedDateTime string with named timezone', () => {
+      const value = '2024-06-15T12:00:00-05:00[America/Chicago]';
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({
+        typed: true,
+        value: Temporal.ZonedDateTime.from(value).toPlainTime(),
       });
     });
 
     test('converts a PlainDateTime ISO string', () => {
-      expect(action['~run']({ typed: true, value: '2024-01-01T14:45:30' }, {})).toStrictEqual({
+      const value = '2024-01-01T14:45:30';
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({
         typed: true,
-        value: Temporal.PlainDateTime.from('2024-01-01T14:45:30').toPlainTime(),
+        value: Temporal.PlainDateTime.from(value).toPlainTime(),
+      });
+    });
+
+    test('converts a PlainDateTime string with sub-seconds', () => {
+      const value = '2024-01-01T00:00:00.123';
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({
+        typed: true,
+        value: Temporal.PlainDateTime.from(value).toPlainTime(),
       });
     });
 
     test('converts a PlainTime ISO string', () => {
-      expect(action['~run']({ typed: true, value: '10:30:00' }, {})).toStrictEqual({
+      const value = '10:30:00';
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({
         typed: true,
-        value: Temporal.PlainTime.from('10:30:00'),
+        value: Temporal.PlainTime.from(value),
       });
     });
 
@@ -102,8 +121,59 @@ describe('toPlainTime', () => {
       abortPipeEarly: undefined,
     };
 
+    test('for undefined', () => {
+      expect(action['~run']({ typed: true, value: undefined }, {})).toStrictEqual({
+        typed: false,
+        value: undefined,
+        issues: [{ ...baseIssue, input: undefined, received: '"Invalid conversion option"' }],
+      });
+    });
+
+    test('for null', () => {
+      expect(action['~run']({ typed: true, value: null }, {})).toStrictEqual({
+        typed: false,
+        value: null,
+        issues: [{ ...baseIssue, input: null, received: '"Invalid conversion option"' }],
+      });
+    });
+
+    test('for plain objects', () => {
+      const value = {};
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({
+        typed: false,
+        value,
+        issues: [{ ...baseIssue, input: value, received: '"Invalid conversion option"' }],
+      });
+    });
+
+    test('for NaN', () => {
+      expect(action['~run']({ typed: true, value: Number.NaN }, {})).toStrictEqual({
+        typed: false,
+        value: Number.NaN,
+        issues: [{ ...baseIssue, input: Number.NaN, received: '"Invalid conversion option"' }],
+      });
+    });
+
+    test('for numbers', () => {
+      const value = 0;
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({
+        typed: false,
+        value,
+        issues: [{ ...baseIssue, input: value, received: '"Invalid conversion option"' }],
+      });
+    });
+
     test('for invalid strings', () => {
       const value = 'not-a-time';
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({
+        typed: false,
+        value,
+        issues: [{ ...baseIssue, input: value, received: `"${value}"` }],
+      });
+    });
+
+    test('for instant strings (Z designator not supported)', () => {
+      const value = '2024-06-01T12:00:00Z';
       expect(action['~run']({ typed: true, value }, {})).toStrictEqual({
         typed: false,
         value,
@@ -120,16 +190,17 @@ describe('toPlainTime', () => {
       });
     });
 
-    test('for null', () => {
-      expect(action['~run']({ typed: true, value: null }, {})).toStrictEqual({
+    test('for plain date strings (time is missing)', () => {
+      const value = '2024-06-01';
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({
         typed: false,
-        value: null,
-        issues: [{ ...baseIssue, input: null, received: '"Invalid conversion option"' }],
+        value,
+        issues: [{ ...baseIssue, input: value, received: `"${value}"` }],
       });
     });
 
-    test('for numbers', () => {
-      const value = 0;
+    test('for Temporal.Instant', () => {
+      const value = Temporal.Instant.fromEpochMilliseconds(0);
       expect(action['~run']({ typed: true, value }, {})).toStrictEqual({
         typed: false,
         value,
@@ -139,15 +210,6 @@ describe('toPlainTime', () => {
 
     test('for Temporal.PlainDate', () => {
       const value = Temporal.PlainDate.from('2024-01-01');
-      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({
-        typed: false,
-        value,
-        issues: [{ ...baseIssue, input: value, received: '"Invalid conversion option"' }],
-      });
-    });
-
-    test('for Temporal.Instant', () => {
-      const value = Temporal.Instant.fromEpochMilliseconds(0);
       expect(action['~run']({ typed: true, value }, {})).toStrictEqual({
         typed: false,
         value,
