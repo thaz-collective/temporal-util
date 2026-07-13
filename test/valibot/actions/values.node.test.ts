@@ -6,6 +6,7 @@ import { temporalValues } from '#src/valibot/actions/values';
 
 describe('should return action object', () => {
   const requirement = [Temporal.PlainDate.from('2024-01-01'), Temporal.PlainDate.from('2024-06-01')] as const;
+
   const baseAction: Omit<TemporalValuesAction<Temporal.PlainDate, typeof requirement, never>, 'message'> = {
     kind: 'validation',
     type: 'temporal_values',
@@ -42,18 +43,57 @@ describe('should return action object', () => {
 
 describe('should return dataset without issues', () => {
   describe('zonedDateTime', () => {
-    const requirement = [Temporal.PlainDate.from('2024-01-01'), Temporal.PlainDate.from('2024-06-01')] as const;
+    const requirement = [
+      Temporal.ZonedDateTime.from('2024-01-01T00:00:00+00:00[UTC]'),
+      Temporal.ZonedDateTime.from('2024-06-01T12:00:00+00:00[UTC]'),
+    ] as const;
     const action = temporalValues(requirement);
+
+    test('for value matching the first requirement', () => {
+      const value = Temporal.ZonedDateTime.from('2024-01-01T00:00:00+00:00[UTC]');
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
+    });
+
+    test('for value matching the last requirement', () => {
+      const value = Temporal.ZonedDateTime.from('2024-06-01T12:00:00+00:00[UTC]');
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
+    });
   });
 
   describe('instant', () => {
-    const requirement = [Temporal.PlainDate.from('2024-01-01'), Temporal.PlainDate.from('2024-06-01')] as const;
+    const requirement = [
+      Temporal.Instant.fromEpochMilliseconds(1_000_000),
+      Temporal.Instant.fromEpochMilliseconds(2_000_000),
+    ] as const;
     const action = temporalValues(requirement);
+
+    test('for value matching the first requirement', () => {
+      const value = Temporal.Instant.fromEpochMilliseconds(1_000_000);
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
+    });
+
+    test('for value matching the last requirement', () => {
+      const value = Temporal.Instant.fromEpochMilliseconds(2_000_000);
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
+    });
   });
 
   describe('plainDateTime', () => {
-    const requirement = [Temporal.PlainDate.from('2024-01-01'), Temporal.PlainDate.from('2024-06-01')] as const;
+    const requirement = [
+      Temporal.PlainDateTime.from('2024-01-01T00:00:00'),
+      Temporal.PlainDateTime.from('2024-06-01T12:00:00'),
+    ] as const;
     const action = temporalValues(requirement);
+
+    test('for value matching the first requirement', () => {
+      const value = Temporal.PlainDateTime.from('2024-01-01T00:00:00');
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
+    });
+
+    test('for value matching the last requirement', () => {
+      const value = Temporal.PlainDateTime.from('2024-06-01T12:00:00');
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
+    });
   });
 
   describe('plainDate', () => {
@@ -72,8 +112,18 @@ describe('should return dataset without issues', () => {
   });
 
   describe('plainTime', () => {
-    const requirement = [Temporal.PlainDate.from('2024-01-01'), Temporal.PlainDate.from('2024-06-01')] as const;
+    const requirement = [Temporal.PlainTime.from('08:00:00'), Temporal.PlainTime.from('16:00:00')] as const;
     const action = temporalValues(requirement);
+
+    test('for value matching the first requirement', () => {
+      const value = Temporal.PlainTime.from('08:00:00');
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
+    });
+
+    test('for value matching the last requirement', () => {
+      const value = Temporal.PlainTime.from('16:00:00');
+      expect(action['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
+    });
   });
 
   // test('for untyped inputs', () => {
@@ -141,7 +191,6 @@ describe('should return dataset with issues', () => {
   //   const value = Temporal.PlainTime.from('12:00:00');
   //   expect(timeAction['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
   // });
-
   // describe('should return dataset with a value issue', () => {
   //   const requirement = [Temporal.PlainDate.from('2024-01-01'), Temporal.PlainDate.from('2024-06-01')] as const;
   //   const action = temporalValues(requirement, 'message');
