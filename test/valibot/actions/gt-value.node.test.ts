@@ -1,8 +1,8 @@
 import { Temporal } from '@js-temporal/polyfill';
 import { describe, expect, test } from 'vite-plus/test';
 
+import type { ZonedDateTimeIssue } from '#src/valibot';
 import type { TemporalGTValueAction, TemporalGTValueIssue } from '#src/valibot/actions/gt-value';
-import type { ZonedDateTimeIssue } from '#src/valibot/schema/zoned-date-time';
 import { temporalGTValue } from '#src/valibot/actions/gt-value';
 
 describe('should return action object', () => {
