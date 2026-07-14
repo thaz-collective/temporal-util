@@ -27,7 +27,7 @@ vp add @thaz/temporal-util @js-temporal/polyfill valibot
 ## Formatters
 
 Builders around `@js-temporal/polyfill`'s `Intl.DateTimeFormat`, defaulting to the environment's calendar, time zone,
-and locale so callers don't have to look them up manually. This is typically better to build at a higher level in the 
+and locale so callers don't have to look them up manually. This is typically better to build at a higher level in the
 rendering tree once so we don't need to calculate these options each time.
 
 ```ts
@@ -35,14 +35,14 @@ import { buildPlainDateFormatter, buildPlainTimeFormatter, buildInstantFormatter
 import { Temporal } from '@js-temporal/polyfill';
 
 const plainDateFormatter = buildPlainDateFormatter();
-plainDateFormatterformat(Temporal.PlainDate.from('2024-01-01'));
+plainDateFormatter.format(Temporal.PlainDate.from('2024-01-01'));
 // -> "01/01/2024" (locale/format dependent)
 
 const plainTimeFormatter = buildPlainTimeFormatter({ locale: 'en-GB' });
-plainTimeFormatter(Temporal.PlainTime.from('08:30:00'));
+plainTimeFormatter.format(Temporal.PlainTime.from('08:30:00'));
 
 const instantFormatter = buildInstantFormatter({ timeZone: 'America/New_York' });
-plainTimeFormatter(Temporal.Instant.fromEpochMilliseconds(0));
+instantFormatter.format(Temporal.Instant.fromEpochMilliseconds(0));
 ```
 
 - `buildPlainDateFormatter(options?)` - date-only output. Use with `Temporal.PlainDate` or `Temporal.PlainDateTime`.
@@ -133,22 +133,31 @@ v.parse(schema, Temporal.PlainDate.from('2023-12-31')); // throws ValiError
 
 ---
 
-## Valibot transformation actions
+## Valibot clamp actions
 
-TODO
+Rewrite an already-typed `Temporal` value in place when it falls outside a bound, instead of raising an issue.
+Unlike `temporalMinValue`/`temporalMaxValue`, these never fail validation - they silently clamp the value to
+`requirement`.
 
 ```ts
 import * as v from 'valibot';
 import { Temporal } from '@js-temporal/polyfill';
 import * as t from '@thaz/temporal-util/valibot';
 
-//TODO
+const schema = v.pipe(
+  t.plainDate(),
+  t.temporalToMinValue(Temporal.PlainDate.from('2024-01-01')),
+  t.temporalToMaxValue(Temporal.PlainDate.from('2024-12-31')),
+);
+
+v.parse(schema, Temporal.PlainDate.from('2023-06-01')); // -> 2024-01-01 (clamped up to the min)
+v.parse(schema, Temporal.PlainDate.from('2025-06-01')); // -> 2024-12-31 (clamped down to the max)
 ```
 
-| Action                            | Clamps when...                     |
-|-----------------------------------|------------------------------------|
-| `temporalToMinValue(requirement)` | value equals `requirement`         |
-| `temporalToMaxValue(requirement)` | value does not equal `requirement` |
+| Action                            | Clamps when...                      |
+|-----------------------------------|-------------------------------------|
+| `temporalToMinValue(requirement)` | value is less than `requirement`    |
+| `temporalToMaxValue(requirement)` | value is greater than `requirement` |
 
 ---
 
