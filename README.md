@@ -1,83 +1,159 @@
-# [@thaz/custom-lint-rules](https://github.com/thaz-collective/custom-lint-rules)
+# [@thaz/temporal-util](https://github.com/thaz-collective/temporal-util)
 
-Custom Oxlint rules for thaz-collective applications and libraries, distributed as an Oxlint JS plugin.
-
----
-
-## Usage
-
-- Install Vite+ (or Oxlint directly) and this package:
-
-  ```bash
-  vp add -D vite-plus oxlint oxlint-tsgolint @thaz/custom-lint-rules
-  ```
-
-- Register the plugin under the `lint.jsPlugins` array in your Vite+ config, then turn on whichever rules you want under `lint.rules`. Rule IDs are prefixed with the plugin's name, `thaz-collective-standards`:
-
-  ```ts
-  import { defineConfig } from 'vite-plus';
-
-  export default defineConfig({
-    run: {
-      tasks: {
-        lint: {
-          command: 'vp lint',
-        },
-      },
-    },
-    lint: {
-      jsPlugins: ['@thaz/custom-lint-rules'],
-      rules: {
-        'thaz-collective-standards/options-file-location': 'error',
-        'thaz-collective-standards/options-factory-shape': 'error',
-        'thaz-collective-standards/require-query-options': 'error',
-        'thaz-collective-standards/query-options-require-key-factory': 'error',
-      },
-    },
-  });
-  ```
-
-  If you'd rather configure Oxlint directly (no Vite+), add the same shape to your `.oxlintrc.json`:
-
-  ```json
-  {
-    "jsPlugins": ["@thaz/custom-lint-rules"],
-    "rules": {
-      "thaz-collective-standards/options-file-location": "error"
-    }
-  }
-  ```
-
-  Since `@thaz/custom-lint-rules` is a plain package specifier here, Oxlint resolves it through normal Node module resolution - no relative path needed. If you want the rules under a different prefix, use the aliased form instead:
-
-  ```ts
-  const lint = {
-    jsPlugins: [{ name: 'thaz', specifier: '@thaz/custom-lint-rules' }],
-    rules: {
-      'thaz/options-file-location': 'error',
-    },
-  };
-  ```
-
-  > JS plugins are an Oxlint alpha feature and not yet subject to semver - see the [Oxlint JS plugins docs](https://oxc.rs/docs/guide/usage/linter/js-plugins.html).
+Temporal utilities for applications and libraries in the thaz-collective namespace. Provides `Intl` formatter
+and a set of [Valibot](https://valibot.dev/) schemas and actions for validating, comparing, and transforming
+[`Temporal`](https://tc39.es/proposal-temporal/docs/) values (via the [`@js-temporal/polyfill`](https://www.npmjs.com/package/@js-temporal/polyfill)).
 
 ---
 
-## Rules
+## Installation
 
-| Rule                                | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `options-file-location`             | Restricts `queryOptions()`/`mutationOptions()` (from `@tanstack/react-query`) to only be called inside a factory file at `src/services/<entity>/options.ts`, so query/mutation option definitions live in one predictable place per entity.                                                                                                                                                                                                                                                         |
-| `options-factory-shape`             | Within an options-factory object, requires any property ending in `QueryOptions` to be built with `queryOptions(...)` and any property ending in `MutationOptions` to be built with `mutationOptions(...)` - catches copy/paste mistakes where the wrong factory function was used.                                                                                                                                                                                                                 |
-| `require-query-options`             | Requires `useQuery`/`useSuspenseQuery` to be called with a queryOptions factory call (e.g. `postOptions.getPostsQueryOptions()`) rather than an inline object literal, keeping query configuration centralized in the options factory instead of scattered across components. Accepts a `requireFactoryCall` option (default `true`) that, when set to `false`, also tolerates a bare variable/expression as the argument instead of requiring a call.                                              |
-| `query-options-require-key-factory` | For every `*QueryOptions` property, requires a sibling key-factory property with the matching base name (e.g. `getPostsQueryOptions` needs a sibling `getPosts`), and verifies the `queryOptions()` call's `queryKey` actually references that sibling factory. Accepts `checkKeyReference` (default `true`) to toggle the queryKey-reference check, and `checkParams` (default `true`) to also verify that any parameters the key factory declares are included somewhere in the `queryKey` array. |
+```bash
+vp add @thaz/temporal-util @js-temporal/polyfill valibot
+```
 
-All four rules are defined with Oxlint's native `createOnce` API (see each rule's source for details on how per-file state is handled) and are exported from a single plugin, `thaz-collective-standards`, via `@oxlint/plugins`' `eslintCompatPlugin`.
+---
+
+## Entry points
+
+| Import                          | Contents                                                                                       |
+|---------------------------------|------------------------------------------------------------------------------------------------|
+| `@thaz/temporal-util`           | Environment detection helpers (`getDefaultCalendar`, `getDefaultTimeZone`, `getDefaultLocale`) |
+| `@thaz/temporal-util/formatter` | `Intl.DateTimeFormat` builders for `Temporal` values                                           |
+| `@thaz/temporal-util/valibot`   | Valibot schemas and actions for `Temporal` values                                              |
+
+---
+
+## Formatters
+
+Builders around `@js-temporal/polyfill`'s `Intl.DateTimeFormat`, defaulting to the environment's calendar, time zone,
+and locale so callers don't have to look them up manually. This is typically better to build at a higher level in the 
+rendering tree once so we don't need to calculate these options each time.
+
+```ts
+import { buildPlainDateFormatter, buildPlainTimeFormatter, buildInstantFormatter } from '@thaz/temporal-util/formatter';
+import { Temporal } from '@js-temporal/polyfill';
+
+const plainDateFormatter = buildPlainDateFormatter();
+plainDateFormatterformat(Temporal.PlainDate.from('2024-01-01'));
+// -> "01/01/2024" (locale/format dependent)
+
+const plainTimeFormatter = buildPlainTimeFormatter({ locale: 'en-GB' });
+plainTimeFormatter(Temporal.PlainTime.from('08:30:00'));
+
+const instantFormatter = buildInstantFormatter({ timeZone: 'America/New_York' });
+plainTimeFormatter(Temporal.Instant.fromEpochMilliseconds(0));
+```
+
+- `buildPlainDateFormatter(options?)` - date-only output. Use with `Temporal.PlainDate` or `Temporal.PlainDateTime`.
+- `buildPlainTimeFormatter(options?)` - time-only output. Use with `Temporal.PlainTime` or `Temporal.PlainDateTime`.
+- `buildInstantFormatter(options)` - date, time, and time zone output for `Temporal.Instant` (`timeZone` is required).
+
+---
+
+## Valibot schemas
+
+Type-only schemas that accept a single `Temporal` instance and issue otherwise - they don't parse strings, they just
+validate that the input is already the correct `Temporal` type.
+
+```ts
+import * as v from 'valibot';
+import * as t from '@thaz/temporal-util/valibot';
+
+const schema = v.object({
+  startDate: t.plainDate('startDate must be a Temporal.PlainDate'),
+});
+```
+
+| Schema            | Accepts                  |
+|-------------------|--------------------------|
+| `duration()`      | `Temporal.Duration`      |
+| `zonedDateTime()` | `Temporal.ZonedDateTime` |
+| `instant()`       | `Temporal.Instant`       |
+| `plainDateTime()` | `Temporal.PlainDateTime` |
+| `plainDate()`     | `Temporal.PlainDate`     |
+| `plainTime()`     | `Temporal.PlainTime`     |
+
+---
+
+## Valibot transformation actions
+
+Convert other input types into a `Temporal` value, adding an issue when the conversion fails.
+
+```ts
+import * as v from 'valibot';
+import * as t from '@thaz/temporal-util/valibot';
+
+const schema = v.pipe(v.unknown(), t.toInstant('Unable to parse an Instant from this value'));
+
+v.parse(schema, '2024-01-01T00:00:00Z'); // Temporal.Instant
+```
+
+| Action              | Converts to              | Accepts                                                                                                             |
+|---------------------|--------------------------|---------------------------------------------------------------------------------------------------------------------|
+| `toZonedDateTime()` | `Temporal.ZonedDateTime` | `string`, `Temporal.ZonedDateTime`                                                                                  |
+| `toInstant()`       | `Temporal.Instant`       | `string` (RFC 9557), `number` (epoch ms), `bigint` (epoch ns), `Date`, `Temporal.ZonedDateTime`, `Temporal.Instant` |
+| `toPlainDateTime()` | `Temporal.PlainDateTime` | `string`, `Temporal.ZonedDateTime`, `Temporal.PlainDateTime`                                                        |
+| `toPlainDate()`     | `Temporal.PlainDate`     | `string`, `Temporal.PlainDateTime`, `Temporal.ZonedDateTime`, `Temporal.PlainDate`                                  |
+| `toPlainTime()`     | `Temporal.PlainTime`     | `string`, `Temporal.PlainDateTime`, `Temporal.ZonedDateTime`, `Temporal.PlainTime`                                  |
+
+---
+
+## Valibot validation actions
+
+Comparison actions for the five `Temporal` value types (`ZonedDateTime`, `Instant`, `PlainDateTime`, `PlainDate`,
+`PlainTime`). Each pairs the piped value against a `requirement` of the same `Temporal` type and adds an issue when the
+comparison fails.
+
+```ts
+import * as v from 'valibot';
+import { Temporal } from '@js-temporal/polyfill';
+import * as t from '@thaz/temporal-util/valibot';
+
+const schema = v.pipe(
+  t.plainDate(),
+  t.temporalMinValue(Temporal.PlainDate.from('2024-01-01')),
+  t.temporalMaxValue(Temporal.PlainDate.from('2024-12-31')),
+);
+
+v.parse(schema, Temporal.PlainDate.from('2024-06-01')); // OK
+v.parse(schema, Temporal.PlainDate.from('2023-12-31')); // throws ValiError
+```
+
+| Action                             | Passes when...                                  |
+|------------------------------------|-------------------------------------------------|
+| `temporalValue(requirement)`       | value equals `requirement`                      |
+| `temporalNotValue(requirement)`    | value does not equal `requirement`              |
+| `temporalGTValue(requirement)`     | value is greater than `requirement`             |
+| `temporalLTValue(requirement)`     | value is less than `requirement`                |
+| `temporalMinValue(requirement)`    | value is greater than or equal to `requirement` |
+| `temporalMaxValue(requirement)`    | value is less than or equal to `requirement`    |
+| `temporalValues(requirement[])`    | value equals any element of `requirement`       |
+| `temporalNotValues(requirement[])` | value equals no element of `requirement`        |
+
+---
+
+## Valibot transformation actions
+
+TODO
+
+```ts
+import * as v from 'valibot';
+import { Temporal } from '@js-temporal/polyfill';
+import * as t from '@thaz/temporal-util/valibot';
+
+//TODO
+```
+
+| Action                            | Clamps when...                     |
+|-----------------------------------|------------------------------------|
+| `temporalToMinValue(requirement)` | value equals `requirement`         |
+| `temporalToMaxValue(requirement)` | value does not equal `requirement` |
 
 ---
 
 ## References
 
-- [Oxlint JS Plugins](https://oxc.rs/docs/guide/usage/linter/js-plugins.html) - how Oxlint loads and runs JS-based plugins like this one
-- [`@oxlint/plugins`](https://www.npmjs.com/package/@oxlint/plugins) - the API (`defineRule`, `definePlugin`, `eslintCompatPlugin`) used to author these rules
-- [TanStack Query](https://tanstack.com/query/latest) - the library these rules enforce conventions around
+- [Temporal proposal](https://tc39.es/proposal-temporal/docs/) - the `Temporal` API these utilities are built around
+- [`@js-temporal/polyfill`](https://www.npmjs.com/package/@js-temporal/polyfill) - the polyfill this package targets
+- [Valibot](https://valibot.dev/) - the schema library these schemas and actions extend
