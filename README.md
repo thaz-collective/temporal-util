@@ -17,7 +17,7 @@ vp add @thaz/temporal-util @js-temporal/polyfill valibot
 ## Entry points
 
 | Import                          | Contents                                                                                       |
-|---------------------------------|------------------------------------------------------------------------------------------------|
+| ------------------------------- | ---------------------------------------------------------------------------------------------- |
 | `@thaz/temporal-util`           | Environment detection helpers (`getDefaultCalendar`, `getDefaultTimeZone`, `getDefaultLocale`) |
 | `@thaz/temporal-util/formatter` | `Intl.DateTimeFormat` builders for `Temporal` values                                           |
 | `@thaz/temporal-util/valibot`   | Valibot schemas and actions for `Temporal` values                                              |
@@ -66,7 +66,7 @@ const schema = v.object({
 ```
 
 | Schema            | Accepts                  |
-|-------------------|--------------------------|
+| ----------------- | ------------------------ |
 | `duration()`      | `Temporal.Duration`      |
 | `zonedDateTime()` | `Temporal.ZonedDateTime` |
 | `instant()`       | `Temporal.Instant`       |
@@ -90,7 +90,7 @@ v.parse(schema, '2024-01-01T00:00:00Z'); // Temporal.Instant
 ```
 
 | Action              | Converts to              | Accepts                                                                                                             |
-|---------------------|--------------------------|---------------------------------------------------------------------------------------------------------------------|
+| ------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------- |
 | `toZonedDateTime()` | `Temporal.ZonedDateTime` | `string`, `Temporal.ZonedDateTime`                                                                                  |
 | `toInstant()`       | `Temporal.Instant`       | `string` (RFC 9557), `number` (epoch ms), `bigint` (epoch ns), `Date`, `Temporal.ZonedDateTime`, `Temporal.Instant` |
 | `toPlainDateTime()` | `Temporal.PlainDateTime` | `string`, `Temporal.ZonedDateTime`, `Temporal.PlainDateTime`                                                        |
@@ -121,7 +121,7 @@ v.parse(schema, Temporal.PlainDate.from('2023-12-31')); // throws ValiError
 ```
 
 | Action                             | Passes when...                                  |
-|------------------------------------|-------------------------------------------------|
+| ---------------------------------- | ----------------------------------------------- |
 | `temporalValue(requirement)`       | value equals `requirement`                      |
 | `temporalNotValue(requirement)`    | value does not equal `requirement`              |
 | `temporalGTValue(requirement)`     | value is greater than `requirement`             |
@@ -155,7 +155,7 @@ v.parse(schema, Temporal.PlainDate.from('2025-06-01')); // -> 2024-12-31 (clampe
 ```
 
 | Action                            | Clamps when...                      |
-|-----------------------------------|-------------------------------------|
+| --------------------------------- | ----------------------------------- |
 | `temporalToMinValue(requirement)` | value is less than `requirement`    |
 | `temporalToMaxValue(requirement)` | value is greater than `requirement` |
 
