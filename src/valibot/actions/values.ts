@@ -80,17 +80,22 @@ export function temporalValues(
         const isValid = this.requirement.some((req) => {
           if (value instanceof Temporal.ZonedDateTime && req instanceof Temporal.ZonedDateTime) {
             return Temporal.ZonedDateTime.compare(value, req) === 0;
-          } else if (value instanceof Temporal.Instant && req instanceof Temporal.Instant) {
+          }
+          if (value instanceof Temporal.Instant && req instanceof Temporal.Instant) {
             return Temporal.Instant.compare(value, req) === 0;
-          } else if (value instanceof Temporal.PlainDateTime && req instanceof Temporal.PlainDateTime) {
+          }
+          if (value instanceof Temporal.PlainDateTime && req instanceof Temporal.PlainDateTime) {
             return Temporal.PlainDateTime.compare(value, req) === 0;
-          } else if (value instanceof Temporal.PlainDate && req instanceof Temporal.PlainDate) {
+          }
+          if (value instanceof Temporal.PlainDate && req instanceof Temporal.PlainDate) {
             return Temporal.PlainDate.compare(value, req) === 0;
-          } else if (value instanceof Temporal.PlainTime && req instanceof Temporal.PlainTime) {
-            return Temporal.PlainTime.compare(value, req) === 0;
           }
 
-          return false;
+          return (
+            value instanceof Temporal.PlainTime &&
+            req instanceof Temporal.PlainTime &&
+            Temporal.PlainTime.compare(value, req) === 0
+          );
         });
 
         if (!isValid) {
