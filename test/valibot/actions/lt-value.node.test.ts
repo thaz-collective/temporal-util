@@ -45,11 +45,6 @@ describe('zonedDateTime', () => {
   const req = Temporal.ZonedDateTime.from('2024-06-01T12:00:00+00:00[UTC]');
   const zdtAction = temporalLTValue(req, 'message');
 
-  test('should return dataset without issues', () => {
-    const value = Temporal.ZonedDateTime.from('2024-01-01T00:00:00+00:00[UTC]');
-    expect(zdtAction['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
-  });
-
   test('untyped inputs', () => {
     const value = Temporal.ZonedDateTime.from('2024-06-01T12:00:00+00:00[UTC]');
     const issues: [ZonedDateTimeIssue] = [
@@ -67,6 +62,13 @@ describe('zonedDateTime', () => {
       typed: false,
       value: null,
       issues,
+    });
+  });
+
+  describe('should return dataset without issues', () => {
+    test('for value before requirement', () => {
+      const value = Temporal.ZonedDateTime.from('2024-01-01T00:00:00+00:00[UTC]');
+      expect(zdtAction['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
     });
   });
 
@@ -108,9 +110,11 @@ describe('instant', () => {
   const req = Temporal.Instant.fromEpochMilliseconds(1_000_000);
   const instantAction = temporalLTValue(req, 'message');
 
-  test('should return dataset without issues', () => {
-    const value = Temporal.Instant.fromEpochMilliseconds(500_000);
-    expect(instantAction['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
+  describe('should return dataset without issues', () => {
+    test('for value before requirement', () => {
+      const value = Temporal.Instant.fromEpochMilliseconds(500_000);
+      expect(instantAction['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
+    });
   });
 
   describe('should return dataset with issues', () => {
@@ -151,9 +155,11 @@ describe('plainDateTime', () => {
   const req = Temporal.PlainDateTime.from('2024-06-01T12:00:00');
   const dtAction = temporalLTValue(req, 'message');
 
-  test('should return dataset without issues', () => {
-    const value = Temporal.PlainDateTime.from('2024-01-01T00:00:00');
-    expect(dtAction['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
+  describe('should return dataset without issues', () => {
+    test('for value before requirement', () => {
+      const value = Temporal.PlainDateTime.from('2024-01-01T00:00:00');
+      expect(dtAction['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
+    });
   });
 
   describe('should return dataset with issues', () => {
@@ -194,9 +200,11 @@ describe('plainDate', () => {
   const requirement = Temporal.PlainDate.from('2024-06-01');
   const dateAction = temporalLTValue(requirement, 'message');
 
-  test('should return dataset without issues', () => {
-    const value = Temporal.PlainDate.from('2024-01-01');
-    expect(dateAction['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
+  describe('should return dataset without issues', () => {
+    test('for value before requirement', () => {
+      const value = Temporal.PlainDate.from('2024-01-01');
+      expect(dateAction['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
+    });
   });
 
   describe('should return dataset with issues', () => {
@@ -237,9 +245,11 @@ describe('plainTime', () => {
   const req = Temporal.PlainTime.from('12:00:00');
   const timeAction = temporalLTValue(req, 'message');
 
-  test('should return dataset without issues', () => {
-    const value = Temporal.PlainTime.from('08:00:00');
-    expect(timeAction['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
+  describe('should return dataset without issues', () => {
+    test('for value before requirement', () => {
+      const value = Temporal.PlainTime.from('08:00:00');
+      expect(timeAction['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
+    });
   });
 
   describe('should return dataset with issues', () => {

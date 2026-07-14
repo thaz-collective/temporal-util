@@ -45,18 +45,6 @@ describe('zonedDateTime', () => {
   const req = Temporal.ZonedDateTime.from('2024-06-01T12:00:00+00:00[UTC]');
   const zdtAction = temporalNotValue(req, 'message');
 
-  describe('should return dataset without issues', () => {
-    test('for value before requirement', () => {
-      const value = Temporal.ZonedDateTime.from('2024-01-01T00:00:00+00:00[UTC]');
-      expect(zdtAction['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
-    });
-
-    test('for value after requirement', () => {
-      const value = Temporal.ZonedDateTime.from('2024-12-01T00:00:00+00:00[UTC]');
-      expect(zdtAction['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
-    });
-  });
-
   test('untyped inputs', () => {
     const value = Temporal.ZonedDateTime.from('2024-06-01T12:00:00+00:00[UTC]');
     const issues: [ZonedDateTimeIssue] = [
@@ -74,6 +62,18 @@ describe('zonedDateTime', () => {
       typed: false,
       value: null,
       issues,
+    });
+  });
+
+  describe('should return dataset without issues', () => {
+    test('for value before requirement', () => {
+      const value = Temporal.ZonedDateTime.from('2024-01-01T00:00:00+00:00[UTC]');
+      expect(zdtAction['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
+    });
+
+    test('for value after requirement', () => {
+      const value = Temporal.ZonedDateTime.from('2024-12-01T00:00:00+00:00[UTC]');
+      expect(zdtAction['~run']({ typed: true, value }, {})).toStrictEqual({ typed: true, value });
     });
   });
 
