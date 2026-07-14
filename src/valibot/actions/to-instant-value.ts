@@ -44,7 +44,7 @@ export function toInstant<TInput>(): ToInstantAction<TInput, undefined>;
  * Creates a transformation action that converts a value to a {@link Temporal.Instant}.
  *
  * Accepted input types and their conversions:
- * - {@link String} — par{sed using RFC 9557.
+ * - {@link String} — parsed using RFC 9557.
  * - {@link Number} — interpreted as epoch milliseconds.
  * - {@link BigInt} — interpreted as epoch nanoseconds.
  * - {@link Date} — converted via `Date.getTime()` (epoch milliseconds).
