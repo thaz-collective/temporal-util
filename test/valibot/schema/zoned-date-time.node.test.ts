@@ -1,4 +1,3 @@
-import { Temporal } from '@js-temporal/polyfill';
 import { describe, expect, test } from 'vite-plus/test';
 
 import type { ZonedDateTimeIssue, ZonedDateTimeSchema } from '#src/valibot/schema/zoned-date-time';

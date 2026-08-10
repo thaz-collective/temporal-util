@@ -1,5 +1,4 @@
 import type { BaseIssue, ErrorMessage, BaseValidation } from 'valibot';
-import { Temporal } from '@js-temporal/polyfill';
 import { _addIssue } from 'valibot';
 
 import type { TemporalValueInput } from './types';

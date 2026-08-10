@@ -50,13 +50,13 @@
     "taze:patch": "vpx taze@latest patch -Ilwr --maturity-period 3"
   },
   "devDependencies": {
-    "@js-temporal/polyfill": "catalog:",
     "@thaz/oxfmt-config": "catalog:",
     "@thaz/oxlint-config": "catalog:",
     "@thaz/typescript-config": "catalog:",
     "@types/node": "catalog:",
     "@vitest/coverage-istanbul": "catalog:",
     "@vitest/ui": "catalog:",
+    "temporal-polyfill": "catalog:",
     "typescript": "catalog:",
     "valibot": "catalog:",
     "vite": "catalog:",
@@ -65,11 +65,16 @@
     "vitest": "catalog:"
   },
   "peerDependencies": {
-    "@js-temporal/polyfill": "^0.5.1",
+    "temporal-polyfill": "^1.0.3",
     "valibot": "^1.4.2"
+  },
+  "peerDependenciesMeta": {
+    "temporal-polyfill": {
+      "optional": true
+    }
   },
   "engines": {
     "node": ">=24"
   },
-  "packageManager": "pnpm@11.11.0"
+  "packageManager": "pnpm@11.20.0"
 }

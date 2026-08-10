@@ -1,4 +1,3 @@
-import { Temporal } from '@js-temporal/polyfill';
 import { describe, expect, test } from 'vite-plus/test';
 
 import type { PlainTimeIssue, PlainTimeSchema } from '#src/valibot/schema/plain-time';

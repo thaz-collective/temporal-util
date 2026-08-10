@@ -1,5 +1,4 @@
 import type { InferInput, InferIssue, InferOutput } from 'valibot';
-import { Temporal } from '@js-temporal/polyfill';
 import { describe, expectTypeOf, test } from 'vite-plus/test';
 
 import type { TemporalMinValueAction, TemporalMinValueIssue } from '#src/valibot/actions/min-value';

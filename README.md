@@ -2,15 +2,41 @@
 
 Temporal utilities for applications and libraries in the thaz-collective namespace. Provides `Intl` formatter
 and a set of [Valibot](https://valibot.dev/) schemas and actions for validating, comparing, and transforming
-[`Temporal`](https://tc39.es/proposal-temporal/docs/) values (via the [`@js-temporal/polyfill`](https://www.npmjs.com/package/@js-temporal/polyfill)).
+[`Temporal`](https://tc39.es/proposal-temporal/docs/) values (assumes a global `Temporal`, e.g. via
+[`temporal-polyfill`](https://www.npmjs.com/package/temporal-polyfill)).
 
 ---
 
 ## Installation
 
 ```bash
-vp add @thaz/temporal-util @js-temporal/polyfill valibot
+vp add @thaz/temporal-util temporal-polyfill valibot
 ```
+
+---
+
+## Requirements
+
+This library assumes a global `Temporal` (and Temporal-aware `Intl`) is already available at runtime — it does not
+bundle or import a Temporal polyfill itself. In your application's entry point, before any code from this package
+runs:
+
+```ts
+import 'temporal-polyfill/full/global';
+```
+
+And in your `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "lib": ["esnext.temporal", "esnext.intl", "esnext.date"]
+  }
+}
+```
+
+If your runtime ships native `Temporal` support, `temporal-polyfill` will detect and prefer it automatically — the
+import above is still required to guarantee the ambient global is installed one way or the other.
 
 ---
 
@@ -26,13 +52,12 @@ vp add @thaz/temporal-util @js-temporal/polyfill valibot
 
 ## Formatters
 
-Builders around `@js-temporal/polyfill`'s `Intl.DateTimeFormat`, defaulting to the environment's calendar, time zone,
-and locale so callers don't have to look them up manually. This is typically better to build at a higher level in the
-rendering tree once so we don't need to calculate these options each time.
+Builders around the ambient, Temporal-aware `Intl.DateTimeFormat`, defaulting to the environment's calendar, time
+zone, and locale so callers don't have to look them up manually. This is typically better to build at a higher level
+in the rendering tree once so we don't need to calculate these options each time.
 
 ```ts
 import { buildPlainDateFormatter, buildPlainTimeFormatter, buildInstantFormatter } from '@thaz/temporal-util/formatter';
-import { Temporal } from '@js-temporal/polyfill';
 
 const plainDateFormatter = buildPlainDateFormatter();
 plainDateFormatter.format(Temporal.PlainDate.from('2024-01-01'));
@@ -107,7 +132,6 @@ comparison fails.
 
 ```ts
 import * as v from 'valibot';
-import { Temporal } from '@js-temporal/polyfill';
 import * as t from '@thaz/temporal-util/valibot';
 
 const schema = v.pipe(
@@ -141,7 +165,6 @@ Unlike `temporalMinValue`/`temporalMaxValue`, these never fail validation - they
 
 ```ts
 import * as v from 'valibot';
-import { Temporal } from '@js-temporal/polyfill';
 import * as t from '@thaz/temporal-util/valibot';
 
 const schema = v.pipe(
@@ -164,5 +187,5 @@ v.parse(schema, Temporal.PlainDate.from('2025-06-01')); // -> 2024-12-31 (clampe
 ## References
 
 - [Temporal proposal](https://tc39.es/proposal-temporal/docs/) - the `Temporal` API these utilities are built around
-- [`@js-temporal/polyfill`](https://www.npmjs.com/package/@js-temporal/polyfill) - the polyfill this package targets
+- [`temporal-polyfill`](https://www.npmjs.com/package/temporal-polyfill) - the polyfill this package targets
 - [Valibot](https://valibot.dev/) - the schema library these schemas and actions extend

@@ -1,4 +1,3 @@
-import { Temporal } from '@js-temporal/polyfill';
 import { describe, expect, test } from 'vite-plus/test';
 
 import type { ToInstantAction, ToInstantIssue } from '#src/valibot/actions/to-instant-value';

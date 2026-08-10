@@ -1,5 +1,4 @@
 import type { BaseIssue, ErrorMessage, OutputDataset, BaseTransformation } from 'valibot';
-import { Temporal } from '@js-temporal/polyfill';
 import { _addIssue } from 'valibot';
 
 /**

@@ -1,13 +1,13 @@
 blockExoticSubdeps: true
 
 catalog:
-  '@js-temporal/polyfill': 0.5.1
   '@thaz/oxfmt-config': 1.0.0-rc.1
   '@thaz/oxlint-config': 1.0.0-rc.1
   '@thaz/typescript-config': 1.0.0-rc.1
-  '@types/node': 24.13.2
+  '@types/node': 24.13.3
   '@vitest/coverage-istanbul': 4.1.10
   '@vitest/ui': 4.1.10
+  temporal-polyfill: 1.0.3
   typescript: 6.0.3
   valibot: 1.4.2
   vite: npm:@voidzero-dev/vite-plus-core@0.2.4

@@ -1,5 +1,3 @@
-import type { Temporal } from '@js-temporal/polyfill';
-
 /**
  * Union of Temporal types supported by the temporal validation and transformation actions.
  */

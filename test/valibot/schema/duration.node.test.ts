@@ -1,4 +1,3 @@
-import { Temporal } from '@js-temporal/polyfill';
 import { describe, expect, test } from 'vite-plus/test';
 
 import type { DurationIssue, DurationSchema } from '#src/valibot/schema/duration';

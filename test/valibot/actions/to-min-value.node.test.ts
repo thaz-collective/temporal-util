@@ -1,4 +1,3 @@
-import { Temporal } from '@js-temporal/polyfill';
 import { describe, expect, test } from 'vite-plus/test';
 
 import type { TemporalToMinValueAction } from '#src/valibot/actions/to-min-value';

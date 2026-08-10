@@ -1,5 +1,4 @@
 import type { BaseTransformation } from 'valibot';
-import { Temporal } from '@js-temporal/polyfill';
 
 import type { TemporalValueInput } from './types';
 
