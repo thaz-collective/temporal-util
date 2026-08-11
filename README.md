@@ -43,66 +43,41 @@ is in your runtime, then you do not need to install `temporal-polyfill`
 
 ## Entry points
 
-| Import                          | Contents                                                                                       |
-| ------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `@thaz/temporal-util`           | Environment detection helpers (`getDefaultCalendar`, `getDefaultTimeZone`, `getDefaultLocale`) |
-| `@thaz/temporal-util/formatter` | `Intl.DateTimeFormat` builders for `Temporal` values                                           |
-| `@thaz/temporal-util/valibot`   | Valibot schemas and actions for `Temporal` values                                              |
+| Import                        | Contents                                                                     |
+| ----------------------------- | ---------------------------------------------------------------------------- |
+| `@thaz/temporal-util`         | `Intl.DateTimeFormat` builders for `Temporal` values and environment helpers |
+| `@thaz/temporal-util/valibot` | Valibot schemas and actions for `Temporal` values                            |
 
 ---
 
 ## Formatters
 
-Builders around the ambient, Temporal-aware `Intl.DateTimeFormat`. `locale` is always required - this library doesn't
-guess it for you, so pass `getDefaultLocale()` (from `@thaz/temporal-util`) or your own value. This is typically
-better to build at a higher level in the rendering tree once so we don't need to calculate these options each time.
+Builders around the ambient, Temporal-aware `Intl.DateTimeFormat`.
+
+Use this higher up the rendering tree so we only calculate it once rather than rebuilding the formatter often
 
 ```ts
-import { buildPlainDateFormatter, buildPlainTimeFormatter, buildInstantFormatter } from '@thaz/temporal-util/formatter';
+import {
+  buildPlainDateFormatter,
+  buildPlainTimeFormatter,
+  buildDateTimeZoneAwareFormatter,
+  formatTemporal,
+} from '@thaz/temporal-util';
 
 const plainDateFormatter = buildPlainDateFormatter({ locale: 'en-US' });
 plainDateFormatter.format(Temporal.PlainDate.from('2024-01-01'));
-// -> "01/01/2024" (defaults to numeric year, 2-digit month/day)
+// OR
+formatTemporal(Temporal.PlainDate.from('2024-01-01'), plainDateFormatter);
 
 const plainTimeFormatter = buildPlainTimeFormatter({ locale: 'en-GB' });
 plainTimeFormatter.format(Temporal.PlainTime.from('08:30:00'));
+// OR
+formatTemporal(Temporal.PlainTime.from('08:30:00'), plainTimeFormatter);
 
-const instantFormatter = buildInstantFormatter({ locale: 'en-US', timeZone: 'America/New_York' });
-instantFormatter.format(Temporal.Instant.fromEpochMilliseconds(0));
-```
-
-- `buildPlainDateFormatter(options)` - date-only output (`locale` required; `year`, `month`, `day`, `calendar`
-  optional, defaulting to numeric year and 2-digit month/day). Use with `Temporal.PlainDate`, `Temporal.PlainDateTime`,
-  `Temporal.PlainYearMonth`, or `Temporal.PlainMonthDay`.
-- `buildPlainTimeFormatter(options)` - time-only output (`locale` required; `hour`, `minute`, `second`, `calendar`
-  optional, defaulting to 2-digit hour/minute/second). Use with `Temporal.PlainTime` or `Temporal.PlainDateTime`.
-- `buildInstantFormatter(options)` - date, time, and time zone output (`locale` and `timeZone` required; all of the
-  date/time fields above plus `timeZoneName` optional, defaulting to a short zone name) for `Temporal.Instant`.
-
-`locale` (and `timeZone` for `buildInstantFormatter`) are the only required options - there's no automatic
-environment-locale fallback, so pass `getDefaultLocale()` explicitly if you want that behavior. Every other field
-falls back to `DEFAULT_DATE_FORMAT`/`DEFAULT_TIME_FORMAT`/`DEFAULT_ZONE_FORMAT`/`DEFAULT_DATE_TIME_ZONE_FORMAT`
-(also exported from this entry point).
-
-Each returns a standard `Intl.DateTimeFormat`, so any `Temporal` value it accepts can be passed to `.format()`
-directly, including `Temporal.PlainYearMonth` and `Temporal.PlainMonthDay`. `Temporal.Instant` requires a formatter
-built with an explicit `timeZone` (via `buildInstantFormatter`), since an instant alone doesn't carry a zone to
-display in.
-
-> [!IMPORTANT]
-> `Temporal.PlainYearMonth` and `Temporal.PlainMonthDay` only format successfully when the formatter's `calendar`
-> matches the value's calendar (both are `'iso8601'` unless you built the value with a different calendar). Most
-> locales default to a non-`iso8601` calendar (e.g. `'gregory'` for `en-US`), so format these with an explicit
-> `calendar: 'iso8601'` option, or they'll throw `RangeError: Mismatching Calendars`. `Temporal.PlainDate`,
-> `Temporal.PlainDateTime`, `Temporal.PlainTime`, and `Temporal.Instant` don't have this restriction.
-
-`Temporal.ZonedDateTime` is not accepted by `.format()` - format it with its own `.toLocaleString()` instead, reusing
-a formatter's `resolvedOptions()` so the zone comes from the value itself rather than the formatter:
-
-```ts
-const zonedDateTime = Temporal.ZonedDateTime.from('2024-06-15T10:30:00-04:00[America/New_York]');
-const { locale, timeZone, ...options } = instantFormatter.resolvedOptions();
-zonedDateTime.toLocaleString(locale, options);
+const dateTimeZoneAwareFormatter = buildDateTimeZoneAwareFormatter({ locale: 'en-US', timeZone: 'America/New_York' });
+dateTimeZoneAwareFormatter.format(Temporal.Instant.fromEpochMilliseconds(0));
+// OR
+formatTemporal(Temporal.Instant.fromEpochMilliseconds(0), dateTimeZoneAwareFormatter);
 ```
 
 ---
@@ -121,14 +96,16 @@ const schema = v.object({
 });
 ```
 
-| Schema            | Accepts                  |
-| ----------------- | ------------------------ |
-| `duration()`      | `Temporal.Duration`      |
-| `zonedDateTime()` | `Temporal.ZonedDateTime` |
-| `instant()`       | `Temporal.Instant`       |
-| `plainDateTime()` | `Temporal.PlainDateTime` |
-| `plainDate()`     | `Temporal.PlainDate`     |
-| `plainTime()`     | `Temporal.PlainTime`     |
+| Schema             | Accepts                   |
+| ------------------ | ------------------------- |
+| `duration()`       | `Temporal.Duration`       |
+| `zonedDateTime()`  | `Temporal.ZonedDateTime`  |
+| `instant()`        | `Temporal.Instant`        |
+| `plainDateTime()`  | `Temporal.PlainDateTime`  |
+| `plainDate()`      | `Temporal.PlainDate`      |
+| `plainTime()`      | `Temporal.PlainTime`      |
+| `plainYearMonth()` | `Temporal.PlainYearMonth` |
+| `plainMonthDay()`  | `Temporal.PlainMonthDay`  |
 
 ---
 
@@ -218,5 +195,5 @@ v.parse(schema, Temporal.PlainDate.from('2025-06-01')); // -> 2024-12-31 (clampe
 ## References
 
 - [Temporal proposal](https://tc39.es/proposal-temporal/docs/) - the `Temporal` API these utilities are built around
-- [`temporal-polyfill`](https://www.npmjs.com/package/temporal-polyfill) - the polyfill this package targets
+- [`temporal-polyfill`](https://www.npmjs.com/package/temporal-polyfill) - the polyfill this package targets as a peer if you don't already have the `Temporal` API in your runtime
 - [Valibot](https://valibot.dev/) - the schema library these schemas and actions extend
