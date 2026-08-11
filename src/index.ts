@@ -46,14 +46,14 @@ export const DEFAULT_TIME_FORMAT = {
 } as const;
 
 /**
- * Default time zone name field used by {@link buildInstantFormatter} when not overridden.
+ * Default time zone name field used by {@link buildDateTimeZoneAwareFormatter} when not overridden.
  */
 export const DEFAULT_ZONE_FORMAT = {
   timeZoneName: 'short',
 } as const;
 
 /**
- * Default date, time, and time zone name fields used by {@link buildInstantFormatter} when not overridden.
+ * Default date, time, and time zone name fields used by {@link buildDateTimeZoneAwareFormatter} when not overridden.
  */
 export const DEFAULT_DATE_TIME_ZONE_FORMAT = {
   ...DEFAULT_ZONE_FORMAT,
@@ -79,7 +79,7 @@ export type PlainDateOptions = SetNonNullable<Pick<Intl.DateTimeFormatOptions, '
  * @param options - Optional date and locale format options.
  * @returns A {@link Intl.DateTimeFormat} instance configured for date-only output.
  * @see {@link buildPlainTimeFormatter}
- * @see {@link buildInstantFormatter}
+ * @see {@link buildDateTimeZoneAwareFormatter}
  */
 export function buildPlainDateFormatter(options: LocaleOptions & PlainDateOptions) {
   return new Intl.DateTimeFormat(options?.locale, {
@@ -101,7 +101,7 @@ export type PlainTimeOptions = SetNonNullable<
  * @param options - Optional time and locale format options.
  * @returns A {@link Intl.DateTimeFormat} instance configured for time-only output.
  * @see {@link buildPlainDateFormatter}
- * @see {@link buildInstantFormatter}
+ * @see {@link buildDateTimeZoneAwareFormatter}
  */
 export function buildPlainTimeFormatter(options: LocaleOptions & PlainTimeOptions) {
   return new Intl.DateTimeFormat(options?.locale, {
@@ -128,11 +128,33 @@ export type TimeZoneOption = Required<SetNonNullable<Pick<Intl.DateTimeFormatOpt
  * @see {@link buildPlainDateFormatter}
  * @see {@link buildPlainTimeFormatter}
  */
-export function buildInstantFormatter(
+export function buildDateTimeZoneAwareFormatter(
   options: LocaleOptions & PlainDateOptions & PlainTimeOptions & TimeZoneNameOption & TimeZoneOption,
 ) {
   return new Intl.DateTimeFormat(options?.locale, {
     ...DEFAULT_DATE_TIME_ZONE_FORMAT,
     ...options,
   });
+}
+
+export type FormattableTemporal =
+  | Temporal.ZonedDateTime
+  | Temporal.Instant
+  | Temporal.PlainDateTime
+  | Temporal.PlainDate
+  | Temporal.PlainTime
+  | Temporal.PlainYearMonth
+  | Temporal.PlainMonthDay;
+
+export function formatTemporal(temporal: FormattableTemporal, formatter: Intl.DateTimeFormat) {
+  if (temporal instanceof Temporal.ZonedDateTime) {
+    // @ts-expect-error Don't love this but doing this till I find a better way if there even is one.
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
+    return temporal.toLocaleString(formatter.resolvedOptions() as Intl.DateTimeFormatOptions);
+
+    // I'd prefer something like this but formatter is immutable so can't update the timeZone of the formatter instance
+    // return format.format(temporal.toInstant());
+  }
+
+  return formatter.format(temporal);
 }

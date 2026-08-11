@@ -5,7 +5,7 @@ import {
   getDefaultLocale,
   getDefaultTimeZone,
   buildPlainDateFormatter,
-  buildInstantFormatter,
+  buildDateTimeZoneAwareFormatter,
   buildPlainTimeFormatter,
 } from '#src/index';
 
@@ -223,10 +223,10 @@ describe('buildPlainTimeFormatter', () => {
   });
 });
 
-describe('buildInstantFormatter', () => {
+describe('buildDateTimeZoneAwareFormatter', () => {
   describe('formatter options', () => {
     test('defaults to check', () => {
-      const formatter = buildInstantFormatter({ locale: 'en-US', timeZone: 'UTC' });
+      const formatter = buildDateTimeZoneAwareFormatter({ locale: 'en-US', timeZone: 'UTC' });
       expect(formatter.resolvedOptions()).toMatchObject({
         locale: 'en-US',
         year: 'numeric',
@@ -241,7 +241,7 @@ describe('buildInstantFormatter', () => {
     });
 
     test('accepts a custom locale', () => {
-      const formatter = buildInstantFormatter({ locale: 'de-DE', timeZone: 'UTC' });
+      const formatter = buildDateTimeZoneAwareFormatter({ locale: 'de-DE', timeZone: 'UTC' });
       expect(formatter.resolvedOptions()).toMatchObject({
         locale: 'de-DE',
         timeZone: 'UTC',
@@ -249,7 +249,7 @@ describe('buildInstantFormatter', () => {
     });
 
     test('accepts a other zone', () => {
-      const formatter = buildInstantFormatter({ locale: 'en-US', timeZone: 'America/New_York' });
+      const formatter = buildDateTimeZoneAwareFormatter({ locale: 'en-US', timeZone: 'America/New_York' });
       expect(formatter.resolvedOptions()).toMatchObject({
         locale: 'en-US',
         timeZone: 'America/New_York',
@@ -257,7 +257,7 @@ describe('buildInstantFormatter', () => {
     });
 
     test('accepts custom date format options', () => {
-      const formatter = buildInstantFormatter({
+      const formatter = buildDateTimeZoneAwareFormatter({
         locale: 'en-US',
         timeZoneName: 'long',
         hour: 'numeric',
@@ -272,7 +272,7 @@ describe('buildInstantFormatter', () => {
     });
 
     test('accepts calendar option', () => {
-      const formatter = buildInstantFormatter({
+      const formatter = buildDateTimeZoneAwareFormatter({
         locale: 'en-US',
         calendar: 'iso8601',
         timeZone: 'UTC',
@@ -286,7 +286,7 @@ describe('buildInstantFormatter', () => {
   });
 
   describe('en-US formatter', () => {
-    const formatter = buildInstantFormatter({ locale: 'en-US', timeZone: 'UTC' });
+    const formatter = buildDateTimeZoneAwareFormatter({ locale: 'en-US', timeZone: 'UTC' });
 
     describe('temporal.ZonedDateTime', () => {
       test('throws when formatting', () => {
@@ -300,7 +300,7 @@ describe('buildInstantFormatter', () => {
         expect(formatter.format(instant)).toBe('06/15/2024, 10:30:00 AM UTC');
       });
 
-      const innerFormatter = buildInstantFormatter({ locale: 'en-US', timeZone: 'America/New_York' });
+      const innerFormatter = buildDateTimeZoneAwareFormatter({ locale: 'en-US', timeZone: 'America/New_York' });
       test('formats successfully with other zone', () => {
         expect(innerFormatter.format(instant)).toBe('06/15/2024, 06:30:00 AM EDT');
       });
@@ -329,7 +329,7 @@ describe('buildInstantFormatter', () => {
         expect(() => formatter.format(plainYearMonth)).toThrow(RangeError);
       });
 
-      const innerFormatter = buildInstantFormatter({ locale: 'en-US', timeZone: 'UTC', calendar: 'iso8601' });
+      const innerFormatter = buildDateTimeZoneAwareFormatter({ locale: 'en-US', timeZone: 'UTC', calendar: 'iso8601' });
       test('formats successfully with calendar passed', () => {
         expect(innerFormatter.format(plainYearMonth)).toBe('2024-06');
       });
@@ -340,7 +340,7 @@ describe('buildInstantFormatter', () => {
         expect(() => formatter.format(plainMonthDay)).toThrow(RangeError);
       });
 
-      const innerFormatter = buildInstantFormatter({ locale: 'en-US', timeZone: 'UTC', calendar: 'iso8601' });
+      const innerFormatter = buildDateTimeZoneAwareFormatter({ locale: 'en-US', timeZone: 'UTC', calendar: 'iso8601' });
       test('formats successfully with calendar passed', () => {
         expect(innerFormatter.format(plainMonthDay)).toBe('06-15');
       });
