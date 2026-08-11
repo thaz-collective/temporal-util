@@ -52,31 +52,36 @@ import above is still required to guarantee the ambient global is installed one 
 
 ## Formatters
 
-Builders around the ambient, Temporal-aware `Intl.DateTimeFormat`, defaulting to the environment's calendar, time
-zone, and locale so callers don't have to look them up manually. This is typically better to build at a higher level
-in the rendering tree once so we don't need to calculate these options each time.
+Builders around the ambient, Temporal-aware `Intl.DateTimeFormat`. `locale` is always required - this library doesn't
+guess it for you, so pass `getDefaultLocale()` (from `@thaz/temporal-util`) or your own value. This is typically
+better to build at a higher level in the rendering tree once so we don't need to calculate these options each time.
 
 ```ts
 import { buildPlainDateFormatter, buildPlainTimeFormatter, buildInstantFormatter } from '@thaz/temporal-util/formatter';
 
-const plainDateFormatter = buildPlainDateFormatter();
+const plainDateFormatter = buildPlainDateFormatter({ locale: 'en-US' });
 plainDateFormatter.format(Temporal.PlainDate.from('2024-01-01'));
-// -> "01/01/2024" (locale/format dependent)
+// -> "01/01/2024" (defaults to numeric year, 2-digit month/day)
 
 const plainTimeFormatter = buildPlainTimeFormatter({ locale: 'en-GB' });
 plainTimeFormatter.format(Temporal.PlainTime.from('08:30:00'));
 
-const instantFormatter = buildInstantFormatter({ timeZone: 'America/New_York' });
+const instantFormatter = buildInstantFormatter({ locale: 'en-US', timeZone: 'America/New_York' });
 instantFormatter.format(Temporal.Instant.fromEpochMilliseconds(0));
 ```
 
-- `buildPlainDateFormatter(options?)` - date-only output (`year`, `month`, `day`, `weekday`, `era`, `calendar`,
-  `numberingSystem`). Use with `Temporal.PlainDate`, `Temporal.PlainDateTime`, `Temporal.PlainYearMonth`, or
-  `Temporal.PlainMonthDay`.
-- `buildPlainTimeFormatter(options?)` - time-only output (`hour`, `minute`, `second`, `hour12`, `calendar`,
-  `numberingSystem`). Use with `Temporal.PlainTime` or `Temporal.PlainDateTime`.
-- `buildInstantFormatter(options)` - date, time, and time zone output (all of the above plus `timeZoneName`) for
-  `Temporal.Instant` (`timeZone` is required).
+- `buildPlainDateFormatter(options)` - date-only output (`locale` required; `year`, `month`, `day`, `calendar`
+  optional, defaulting to numeric year and 2-digit month/day). Use with `Temporal.PlainDate`, `Temporal.PlainDateTime`,
+  `Temporal.PlainYearMonth`, or `Temporal.PlainMonthDay`.
+- `buildPlainTimeFormatter(options)` - time-only output (`locale` required; `hour`, `minute`, `second`, `calendar`
+  optional, defaulting to 2-digit hour/minute/second). Use with `Temporal.PlainTime` or `Temporal.PlainDateTime`.
+- `buildInstantFormatter(options)` - date, time, and time zone output (`locale` and `timeZone` required; all of the
+  date/time fields above plus `timeZoneName` optional, defaulting to a short zone name) for `Temporal.Instant`.
+
+`locale` (and `timeZone` for `buildInstantFormatter`) are the only required options - there's no automatic
+environment-locale fallback, so pass `getDefaultLocale()` explicitly if you want that behavior. Every other field
+falls back to `DEFAULT_DATE_FORMAT`/`DEFAULT_TIME_FORMAT`/`DEFAULT_ZONE_FORMAT`/`DEFAULT_DATE_TIME_ZONE_FORMAT`
+(also exported from this entry point).
 
 Each returns a standard `Intl.DateTimeFormat`, so any `Temporal` value it accepts can be passed to `.format()`
 directly, including `Temporal.PlainYearMonth` and `Temporal.PlainMonthDay`. `Temporal.Instant` requires a formatter

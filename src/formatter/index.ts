@@ -1,21 +1,33 @@
 import type { SetNonNullable } from 'type-fest';
 
+/**
+ * Default date fields used by {@link buildPlainDateFormatter} when not overridden.
+ */
 export const DEFAULT_DATE_FORMAT = {
   year: 'numeric',
   month: '2-digit',
   day: '2-digit',
 } as const;
 
+/**
+ * Default time fields used by {@link buildPlainTimeFormatter} when not overridden.
+ */
 export const DEFAULT_TIME_FORMAT = {
   hour: '2-digit',
   minute: '2-digit',
   second: '2-digit',
 } as const;
 
+/**
+ * Default time zone name field used by {@link buildInstantFormatter} when not overridden.
+ */
 export const DEFAULT_ZONE_FORMAT = {
   timeZoneName: 'short',
 } as const;
 
+/**
+ * Default date, time, and time zone name fields used by {@link buildInstantFormatter} when not overridden.
+ */
 export const DEFAULT_DATE_TIME_ZONE_FORMAT = {
   ...DEFAULT_ZONE_FORMAT,
   ...DEFAULT_TIME_FORMAT,
