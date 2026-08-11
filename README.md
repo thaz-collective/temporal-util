@@ -1,7 +1,7 @@
 # [@thaz/temporal-util](https://github.com/thaz-collective/temporal-util)
 
-Temporal utilities for applications and libraries in the thaz-collective namespace. Provides `Intl` formatter
-and a set of [Valibot](https://valibot.dev/) schemas and actions for validating, comparing, and transforming
+Temporal utilities for applications and libraries in the thaz-collective namespace. Provides a preferred `Intl` formatter
+configuration and a set of [Valibot](https://valibot.dev/) schemas and actions for validating, comparing, and transforming
 [`Temporal`](https://tc39.es/proposal-temporal/docs/) values (assumes a global `Temporal`, e.g. via
 [`temporal-polyfill`](https://www.npmjs.com/package/temporal-polyfill)).
 
@@ -36,7 +36,8 @@ And in your `tsconfig.json`:
 ```
 
 If your runtime ships native `Temporal` support, `temporal-polyfill` will detect and prefer it automatically — the
-import above is still required to guarantee the ambient global is installed one way or the other.
+import above is still required to guarantee the ambient global is installed one way or the other. If you are sure `Temporal`
+is in your runtime, then you do not need to install `temporal-polyfill`
 
 ---
 
