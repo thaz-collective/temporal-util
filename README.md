@@ -96,16 +96,16 @@ const schema = v.object({
 });
 ```
 
-| Schema             | Accepts                   |
-| ------------------ | ------------------------- |
-| `duration()`       | `Temporal.Duration`       |
-| `zonedDateTime()`  | `Temporal.ZonedDateTime`  |
-| `instant()`        | `Temporal.Instant`        |
-| `plainDateTime()`  | `Temporal.PlainDateTime`  |
-| `plainDate()`      | `Temporal.PlainDate`      |
-| `plainTime()`      | `Temporal.PlainTime`      |
-| `plainYearMonth()` | `Temporal.PlainYearMonth` |
-| `plainMonthDay()`  | `Temporal.PlainMonthDay`  |
+| Schema               | Accepts                   |
+|----------------------|---------------------------|
+| `t.duration()`       | `Temporal.Duration`       |
+| `t.zonedDateTime()`  | `Temporal.ZonedDateTime`  |
+| `t.instant()`        | `Temporal.Instant`        |
+| `t.plainDateTime()`  | `Temporal.PlainDateTime`  |
+| `t.plainDate()`      | `Temporal.PlainDate`      |
+| `t.plainTime()`      | `Temporal.PlainTime`      |
+| `t.plainYearMonth()` | `Temporal.PlainYearMonth` |
+| `t.plainMonthDay()`  | `Temporal.PlainMonthDay`  |
 
 ---
 
@@ -122,15 +122,15 @@ const schema = v.pipe(v.unknown(), t.toInstant('Unable to parse an Instant from 
 v.parse(schema, '2024-01-01T00:00:00Z'); // Temporal.Instant
 ```
 
-| Action               | Converts to               | Accepts                                                                                                                  |
-| -------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `toZonedDateTime()`  | `Temporal.ZonedDateTime`  | `string` (RFC 9557), `Temporal.ZonedDateTime`                                                                            |
-| `toInstant()`        | `Temporal.Instant`        | `string` (RFC 9557), `number` (epoch ms), `bigint` (epoch ns), `Date`, `Temporal.ZonedDateTime`, `Temporal.Instant`      |
-| `toPlainDateTime()`  | `Temporal.PlainDateTime`  | `string` (RFC 9557), `Temporal.ZonedDateTime`, `Temporal.PlainDateTime`                                                  |
-| `toPlainDate()`      | `Temporal.PlainDate`      | `string` (RFC 9557), `Temporal.ZonedDateTime`, `Temporal.PlainDateTime`, `Temporal.PlainDate`                            |
-| `toPlainTime()`      | `Temporal.PlainTime`      | `string` (RFC 9557), `Temporal.ZonedDateTime`, `Temporal.PlainDateTime`, `Temporal.PlainTime`                            |
-| `toPlainYearMonth()` | `Temporal.PlainYearMonth` | `string` (RFC 9557), `Temporal.ZonedDateTime`, `Temporal.PlainDateTime`, `Temporal.PlainDate`, `Temporal.PlainYearMonth` |
-| `toPlainMonthDay()`  | `Temporal.PlainMonthDay`  | `string` (RFC 9557), `Temporal.ZonedDateTime`, `Temporal.PlainDateTime`, `Temporal.PlainDate`, `Temporal.PlainMonthDay`  |
+| Action                 | Converts to               | Accepts                                                                                                                  |
+|------------------------|---------------------------|--------------------------------------------------------------------------------------------------------------------------|
+| `t.toZonedDateTime()`  | `Temporal.ZonedDateTime`  | `string` (RFC 9557), `Temporal.ZonedDateTime`                                                                            |
+| `t.toInstant()`        | `Temporal.Instant`        | `string` (RFC 9557), `number` (epoch ms), `bigint` (epoch ns), `Date`, `Temporal.ZonedDateTime`, `Temporal.Instant`      |
+| `t.toPlainDateTime()`  | `Temporal.PlainDateTime`  | `string` (RFC 9557), `Temporal.ZonedDateTime`, `Temporal.PlainDateTime`                                                  |
+| `t.toPlainDate()`      | `Temporal.PlainDate`      | `string` (RFC 9557), `Temporal.ZonedDateTime`, `Temporal.PlainDateTime`, `Temporal.PlainDate`                            |
+| `t.toPlainTime()`      | `Temporal.PlainTime`      | `string` (RFC 9557), `Temporal.ZonedDateTime`, `Temporal.PlainDateTime`, `Temporal.PlainTime`                            |
+| `t.toPlainYearMonth()` | `Temporal.PlainYearMonth` | `string` (RFC 9557), `Temporal.ZonedDateTime`, `Temporal.PlainDateTime`, `Temporal.PlainDate`, `Temporal.PlainYearMonth` |
+| `t.toPlainMonthDay()`  | `Temporal.PlainMonthDay`  | `string` (RFC 9557), `Temporal.ZonedDateTime`, `Temporal.PlainDateTime`, `Temporal.PlainDate`, `Temporal.PlainMonthDay`  |
 
 ---
 
@@ -154,16 +154,16 @@ v.parse(schema, Temporal.PlainDate.from('2024-06-01')); // OK
 v.parse(schema, Temporal.PlainDate.from('2023-12-31')); // throws ValiError
 ```
 
-| Action                             | Passes when...                                  |
-| ---------------------------------- | ----------------------------------------------- |
-| `temporalValue(requirement)`       | value equals `requirement`                      |
-| `temporalNotValue(requirement)`    | value does not equal `requirement`              |
-| `temporalGTValue(requirement)`     | value is greater than `requirement`             |
-| `temporalLTValue(requirement)`     | value is less than `requirement`                |
-| `temporalMinValue(requirement)`    | value is greater than or equal to `requirement` |
-| `temporalMaxValue(requirement)`    | value is less than or equal to `requirement`    |
-| `temporalValues(requirement[])`    | value equals any element of `requirement`       |
-| `temporalNotValues(requirement[])` | value equals no element of `requirement`        |
+| Action                               | Passes when...                                  |
+|--------------------------------------|-------------------------------------------------|
+| `t.temporalValue(requirement)`       | value equals `requirement`                      |
+| `t.temporalNotValue(requirement)`    | value does not equal `requirement`              |
+| `t.temporalGTValue(requirement)`     | value is greater than `requirement`             |
+| `t.temporalLTValue(requirement)`     | value is less than `requirement`                |
+| `t.temporalMinValue(requirement)`    | value is greater than or equal to `requirement` |
+| `t.temporalMaxValue(requirement)`    | value is less than or equal to `requirement`    |
+| `t.temporalValues(requirement[])`    | value equals any element of `requirement`       |
+| `t.temporalNotValues(requirement[])` | value equals no element of `requirement`        |
 
 ---
 
@@ -187,10 +187,10 @@ v.parse(schema, Temporal.PlainDate.from('2023-06-01')); // -> 2024-01-01 (clampe
 v.parse(schema, Temporal.PlainDate.from('2025-06-01')); // -> 2024-12-31 (clamped down to the max)
 ```
 
-| Action                            | Clamps when...                      |
-| --------------------------------- | ----------------------------------- |
-| `temporalToMinValue(requirement)` | value is less than `requirement`    |
-| `temporalToMaxValue(requirement)` | value is greater than `requirement` |
+| Action                              | Clamps when...                      |
+|-------------------------------------|-------------------------------------|
+| `t.temporalToMinValue(requirement)` | value is less than `requirement`    |
+| `t.temporalToMaxValue(requirement)` | value is greater than `requirement` |
 
 ---
 
