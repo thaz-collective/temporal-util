@@ -1,3 +1,5 @@
+import type { SetNonNullable } from 'type-fest';
+
 export const DEFAULT_DATE_FORMAT = {
   year: 'numeric',
   month: '2-digit',
@@ -24,8 +26,13 @@ export const DEFAULT_DATE_TIME_ZONE_FORMAT = {
  * Locale portion of the {@link Intl.DateTimeFormat}
  */
 export interface LocaleOptions {
-  locale?: string | string[];
+  locale?: NonNullable<Intl.LocalesArgument>;
 }
+
+/**
+ * Date portion of the {@link Intl.DateTimeFormat} for {@link Intl.DateTimeFormatOptions}
+ */
+export type PlainDateOptions = SetNonNullable<Pick<Intl.DateTimeFormatOptions, 'year' | 'month' | 'day' | 'calendar'>>;
 
 /**
  * Use when you need to display only the date portion of a {@link Temporal} value.
@@ -35,14 +42,19 @@ export interface LocaleOptions {
  * @see {@link buildPlainTimeFormatter}
  * @see {@link buildInstantFormatter}
  */
-export function buildPlainDateFormatter(
-  options: Pick<Intl.DateTimeFormatOptions, 'year' | 'month' | 'day'> & LocaleOptions = {},
-) {
+export function buildPlainDateFormatter(options: LocaleOptions & PlainDateOptions = {}) {
   return new Intl.DateTimeFormat(options?.locale, {
     ...DEFAULT_DATE_FORMAT,
     ...options,
   });
 }
+
+/**
+ * Time portion of the {@link Intl.DateTimeFormat} for {@link Intl.DateTimeFormatOptions}
+ */
+export type PlainTimeOptions = SetNonNullable<
+  Pick<Intl.DateTimeFormatOptions, 'hour' | 'minute' | 'second' | 'calendar'>
+>;
 
 /**
  * Use when you need to display only the time portion of a {@link Temporal} value.
@@ -52,18 +64,22 @@ export function buildPlainDateFormatter(
  * @see {@link buildPlainDateFormatter}
  * @see {@link buildInstantFormatter}
  */
-export function buildPlainTimeFormatter(
-  options: Pick<Intl.DateTimeFormatOptions, 'hour' | 'minute' | 'second'> & LocaleOptions = {},
-) {
+export function buildPlainTimeFormatter(options: LocaleOptions & PlainTimeOptions = {}) {
   return new Intl.DateTimeFormat(options?.locale, {
     ...DEFAULT_TIME_FORMAT,
     ...options,
   });
 }
 
-export interface TimeZoneOption {
-  timeZone: NonNullable<Intl.DateTimeFormatOptions['timeZone']>;
-}
+/**
+ * TimeZoneName portion of the {@link Intl.DateTimeFormat} for {@link Intl.DateTimeFormatOptions}
+ */
+export type TimeZoneNameOption = SetNonNullable<Pick<Intl.DateTimeFormatOptions, 'timeZoneName'>>;
+
+/**
+ * Zone identifier portion of the {@link Intl.DateTimeFormat} for {@link Intl.DateTimeFormatOptions}
+ */
+export type TimeZoneOption = Required<SetNonNullable<Pick<Intl.DateTimeFormatOptions, 'timeZone'>>>;
 
 /**
  * Use when you need to display the full date-time-zone portion of a {@link Temporal.Instant} value.
@@ -74,9 +90,7 @@ export interface TimeZoneOption {
  * @see {@link buildPlainTimeFormatter}
  */
 export function buildInstantFormatter(
-  options: Pick<Intl.DateTimeFormatOptions, 'year' | 'month' | 'day' | 'hour' | 'minute' | 'second' | 'timeZoneName'> &
-    TimeZoneOption &
-    LocaleOptions,
+  options: LocaleOptions & PlainDateOptions & PlainTimeOptions & TimeZoneNameOption & TimeZoneOption,
 ) {
   return new Intl.DateTimeFormat(options?.locale, {
     ...DEFAULT_DATE_TIME_ZONE_FORMAT,

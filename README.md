@@ -70,9 +70,34 @@ const instantFormatter = buildInstantFormatter({ timeZone: 'America/New_York' })
 instantFormatter.format(Temporal.Instant.fromEpochMilliseconds(0));
 ```
 
-- `buildPlainDateFormatter(options?)` - date-only output. Use with `Temporal.PlainDate` or `Temporal.PlainDateTime`.
-- `buildPlainTimeFormatter(options?)` - time-only output. Use with `Temporal.PlainTime` or `Temporal.PlainDateTime`.
-- `buildInstantFormatter(options)` - date, time, and time zone output for `Temporal.Instant` (`timeZone` is required).
+- `buildPlainDateFormatter(options?)` - date-only output (`year`, `month`, `day`, `weekday`, `era`, `calendar`,
+  `numberingSystem`). Use with `Temporal.PlainDate`, `Temporal.PlainDateTime`, `Temporal.PlainYearMonth`, or
+  `Temporal.PlainMonthDay`.
+- `buildPlainTimeFormatter(options?)` - time-only output (`hour`, `minute`, `second`, `hour12`, `calendar`,
+  `numberingSystem`). Use with `Temporal.PlainTime` or `Temporal.PlainDateTime`.
+- `buildInstantFormatter(options)` - date, time, and time zone output (all of the above plus `timeZoneName`) for
+  `Temporal.Instant` (`timeZone` is required).
+
+Each returns a standard `Intl.DateTimeFormat`, so any `Temporal` value it accepts can be passed to `.format()`
+directly, including `Temporal.PlainYearMonth` and `Temporal.PlainMonthDay`. `Temporal.Instant` requires a formatter
+built with an explicit `timeZone` (via `buildInstantFormatter`), since an instant alone doesn't carry a zone to
+display in.
+
+> [!IMPORTANT]
+> `Temporal.PlainYearMonth` and `Temporal.PlainMonthDay` only format successfully when the formatter's `calendar`
+> matches the value's calendar (both are `'iso8601'` unless you built the value with a different calendar). Most
+> locales default to a non-`iso8601` calendar (e.g. `'gregory'` for `en-US`), so format these with an explicit
+> `calendar: 'iso8601'` option, or they'll throw `RangeError: Mismatching Calendars`. `Temporal.PlainDate`,
+> `Temporal.PlainDateTime`, `Temporal.PlainTime`, and `Temporal.Instant` don't have this restriction.
+
+`Temporal.ZonedDateTime` is not accepted by `.format()` - format it with its own `.toLocaleString()` instead, reusing
+a formatter's `resolvedOptions()` so the zone comes from the value itself rather than the formatter:
+
+```ts
+const zonedDateTime = Temporal.ZonedDateTime.from('2024-06-15T10:30:00-04:00[America/New_York]');
+const { locale, timeZone, ...options } = instantFormatter.resolvedOptions();
+zonedDateTime.toLocaleString(locale, options);
+```
 
 ---
 

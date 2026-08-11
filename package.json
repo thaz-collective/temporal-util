@@ -57,6 +57,7 @@
     "@vitest/coverage-istanbul": "catalog:",
     "@vitest/ui": "catalog:",
     "temporal-polyfill": "catalog:",
+    "type-fest": "catalog:",
     "typescript": "catalog:",
     "valibot": "catalog:",
     "vite": "catalog:",
