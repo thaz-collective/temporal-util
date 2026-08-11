@@ -137,6 +137,10 @@ export function buildDateTimeZoneAwareFormatter(
   });
 }
 
+/**
+ * Any {@link Temporal} value that can be formatted, either directly via {@link Intl.DateTimeFormat.format}
+ * or, for {@link Temporal.ZonedDateTime}, via its own `toLocaleString`.
+ */
 export type FormattableTemporal =
   | Temporal.ZonedDateTime
   | Temporal.Instant
@@ -146,14 +150,23 @@ export type FormattableTemporal =
   | Temporal.PlainYearMonth
   | Temporal.PlainMonthDay;
 
+/**
+ * Formats any {@link FormattableTemporal} value with the given formatter, including
+ * {@link Temporal.ZonedDateTime}, which `Intl.DateTimeFormat.format` cannot format directly.
+ *
+ * @param temporal - The value to format.
+ * @param formatter - The formatter whose resolved locale and options are applied.
+ * @returns The formatted string.
+ */
 export function formatTemporal(temporal: FormattableTemporal, formatter: Intl.DateTimeFormat) {
   if (temporal instanceof Temporal.ZonedDateTime) {
-    // @ts-expect-error Don't love this but doing this till I find a better way if there even is one.
+    const { locale, timeZone: _timeZone, ...options } = formatter.resolvedOptions();
+
     // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-    return temporal.toLocaleString(formatter.resolvedOptions() as Intl.DateTimeFormatOptions);
+    return temporal.toLocaleString(locale, options as Intl.DateTimeFormatOptions);
 
     // I'd prefer something like this but formatter is immutable so can't update the timeZone of the formatter instance
-    // return format.format(temporal.toInstant());
+    // return formatter.format(temporal.toInstant());
   }
 
   return formatter.format(temporal);
