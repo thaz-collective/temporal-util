@@ -169,5 +169,24 @@ export function formatTemporal(temporal: FormattableTemporal, formatter: Intl.Da
     // return formatter.format(temporal.toInstant());
   }
 
+  // May want to add these blocks in the future. Not sure though I want this or current yet.
+  // else if (temporal instanceof Temporal.PlainYearMonth) {
+  //   const { locale, ...options } = formatter.resolvedOptions();
+  //
+  //   return temporal.toLocaleString(locale, {
+  //     // oxlint-disable-next-line typescript/no-unsafe-type-assertion
+  //     ...(options as Intl.DateTimeFormatOptions),
+  //     calendar: temporal.calendarId,
+  //   });
+  // } else if (temporal instanceof Temporal.PlainMonthDay) {
+  //   const { locale, ...options } = formatter.resolvedOptions();
+  //
+  //   return temporal.toLocaleString(locale, {
+  //     // oxlint-disable-next-line typescript/no-unsafe-type-assertion
+  //     ...(options as Intl.DateTimeFormatOptions),
+  //     calendar: temporal.calendarId,
+  //   });
+  // }
+
   return formatter.format(temporal);
 }

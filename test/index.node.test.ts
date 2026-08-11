@@ -7,6 +7,7 @@ import {
   buildPlainDateFormatter,
   buildDateTimeZoneAwareFormatter,
   buildPlainTimeFormatter,
+  formatTemporal,
 } from '#src/index';
 
 describe('getDefaultCalendar', () => {
@@ -344,6 +345,77 @@ describe('buildDateTimeZoneAwareFormatter', () => {
       test('formats successfully with calendar passed', () => {
         expect(innerFormatter.format(plainMonthDay)).toBe('06-15');
       });
+    });
+  });
+});
+
+describe('formatTemporal', () => {
+  describe('temporal.ZonedDateTime', () => {
+    test('formats using its own time zone, ignoring the formatter timeZone option', () => {
+      const formatter = buildDateTimeZoneAwareFormatter({ locale: 'en-US', timeZone: 'UTC' });
+      expect(formatTemporal(zonedDateTime, formatter)).toBe('06/15/2024, 10:30:00 AM EDT');
+    });
+
+    test('formats with a date-only formatter', () => {
+      const formatter = buildPlainDateFormatter({ locale: 'en-US' });
+      expect(formatTemporal(zonedDateTime, formatter)).toBe('06/15/2024');
+    });
+
+    test('formats with a time-only formatter', () => {
+      const formatter = buildPlainTimeFormatter({ locale: 'en-US' });
+      expect(formatTemporal(zonedDateTime, formatter)).toBe('10:30:00 AM');
+    });
+  });
+
+  describe('temporal.Instant', () => {
+    test('delegates to formatter.format', () => {
+      const formatter = buildDateTimeZoneAwareFormatter({ locale: 'en-US', timeZone: 'UTC' });
+      expect(formatTemporal(instant, formatter)).toBe('06/15/2024, 10:30:00 AM UTC');
+    });
+  });
+
+  describe('temporal.PlainDateTime', () => {
+    test('delegates to formatter.format', () => {
+      const formatter = buildPlainDateFormatter({ locale: 'en-US' });
+      expect(formatTemporal(plainDateTime, formatter)).toBe('06/15/2024');
+    });
+  });
+
+  describe('temporal.PlainDate', () => {
+    test('delegates to formatter.format', () => {
+      const formatter = buildPlainDateFormatter({ locale: 'en-US' });
+      expect(formatTemporal(plainDate, formatter)).toBe('06/15/2024');
+    });
+  });
+
+  describe('temporal.PlainTime', () => {
+    test('delegates to formatter.format', () => {
+      const formatter = buildPlainTimeFormatter({ locale: 'en-US' });
+      expect(formatTemporal(plainTime, formatter)).toBe('10:30:00 AM');
+    });
+  });
+
+  describe('temporal.PlainYearMonth', () => {
+    test('delegates to formatter.format, throwing when the calendar mismatches', () => {
+      const formatter = buildPlainDateFormatter({ locale: 'en-US' });
+      expect(() => formatTemporal(plainYearMonth, formatter)).toThrow(RangeError);
+    });
+
+    test('delegates to formatter.format, formatting successfully with matching calendar', () => {
+      const formatter = buildPlainDateFormatter({ locale: 'en-US', calendar: 'iso8601' });
+      expect(formatTemporal(plainYearMonth, formatter)).toBe('2024-06');
+    });
+  });
+
+  describe('temporal.PlainMonthDay', () => {
+    test('delegates to formatter.format, throwing when the calendar mismatches', () => {
+      const formatter = buildPlainDateFormatter({ locale: 'en-US' });
+      expect(() => formatTemporal(plainMonthDay, formatter)).toThrow(RangeError);
+    });
+
+    test('delegates to formatter.format, formatting successfully with matching calendar', () => {
+      const formatter = buildPlainDateFormatter({ locale: 'en-US', calendar: 'iso8601' });
+      expect(formatTemporal(plainMonthDay, formatter)).toBe('06-15');
     });
   });
 });
