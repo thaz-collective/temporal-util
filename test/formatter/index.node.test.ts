@@ -13,8 +13,9 @@ const zonedDateTime = Temporal.ZonedDateTime.from('2024-06-15T10:30:00-04:00[Ame
 describe('buildPlainDateFormatter', () => {
   describe('formatter options', () => {
     test('defaults to check', () => {
-      const formatter = buildPlainDateFormatter();
+      const formatter = buildPlainDateFormatter({ locale: 'en-US' });
       expect(formatter.resolvedOptions()).toMatchObject({
+        locale: 'en-US',
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
@@ -29,8 +30,9 @@ describe('buildPlainDateFormatter', () => {
     });
 
     test('accepts custom date format options', () => {
-      const formatter = buildPlainDateFormatter({ year: '2-digit', month: 'long', day: 'numeric' });
+      const formatter = buildPlainDateFormatter({ locale: 'en-US', year: '2-digit', month: 'long', day: 'numeric' });
       expect(formatter.resolvedOptions()).toMatchObject({
+        locale: 'en-US',
         year: '2-digit',
         month: 'long',
         day: 'numeric',
@@ -39,9 +41,11 @@ describe('buildPlainDateFormatter', () => {
 
     test('accepts calendar option', () => {
       const formatter = buildPlainDateFormatter({
+        locale: 'en-US',
         calendar: 'iso8601',
       });
       expect(formatter.resolvedOptions()).toMatchObject({
+        locale: 'en-US',
         calendar: 'iso8601',
       });
     });
@@ -108,8 +112,9 @@ describe('buildPlainDateFormatter', () => {
 describe('buildPlainTimeFormatter', () => {
   describe('formatter options', () => {
     test('defaults to check', () => {
-      const formatter = buildPlainTimeFormatter();
+      const formatter = buildPlainTimeFormatter({ locale: 'en-US' });
       expect(formatter.resolvedOptions()).toMatchObject({
+        locale: 'en-US',
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit',
@@ -124,8 +129,9 @@ describe('buildPlainTimeFormatter', () => {
     });
 
     test('accepts custom date format options', () => {
-      const formatter = buildPlainTimeFormatter({ hour: 'numeric', minute: '2-digit' });
+      const formatter = buildPlainTimeFormatter({ locale: 'en-US', hour: 'numeric', minute: '2-digit' });
       expect(formatter.resolvedOptions()).toMatchObject({
+        locale: 'en-US',
         hour: 'numeric',
         minute: '2-digit',
         second: '2-digit',
@@ -134,9 +140,11 @@ describe('buildPlainTimeFormatter', () => {
 
     test('accepts calendar option', () => {
       const formatter = buildPlainTimeFormatter({
+        locale: 'en-US',
         calendar: 'iso8601',
       });
       expect(formatter.resolvedOptions()).toMatchObject({
+        locale: 'en-US',
         calendar: 'iso8601',
       });
     });
@@ -193,8 +201,9 @@ describe('buildPlainTimeFormatter', () => {
 describe('buildInstantFormatter', () => {
   describe('formatter options', () => {
     test('defaults to check', () => {
-      const formatter = buildInstantFormatter({ timeZone: 'UTC' });
+      const formatter = buildInstantFormatter({ locale: 'en-US', timeZone: 'UTC' });
       expect(formatter.resolvedOptions()).toMatchObject({
+        locale: 'en-US',
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
@@ -214,9 +223,23 @@ describe('buildInstantFormatter', () => {
       });
     });
 
-    test('accepts custom date format options', () => {
-      const formatter = buildInstantFormatter({ timeZoneName: 'long', hour: 'numeric', timeZone: 'UTC' });
+    test('accepts a other zone', () => {
+      const formatter = buildInstantFormatter({ locale: 'en-US', timeZone: 'America/New_York' });
       expect(formatter.resolvedOptions()).toMatchObject({
+        locale: 'en-US',
+        timeZone: 'America/New_York',
+      });
+    });
+
+    test('accepts custom date format options', () => {
+      const formatter = buildInstantFormatter({
+        locale: 'en-US',
+        timeZoneName: 'long',
+        hour: 'numeric',
+        timeZone: 'UTC',
+      });
+      expect(formatter.resolvedOptions()).toMatchObject({
+        locale: 'en-US',
         timeZoneName: 'long',
         hour: 'numeric',
         timeZone: 'UTC',
@@ -225,10 +248,12 @@ describe('buildInstantFormatter', () => {
 
     test('accepts calendar option', () => {
       const formatter = buildInstantFormatter({
+        locale: 'en-US',
         calendar: 'iso8601',
         timeZone: 'UTC',
       });
       expect(formatter.resolvedOptions()).toMatchObject({
+        locale: 'en-US',
         calendar: 'iso8601',
         timeZone: 'UTC',
       });

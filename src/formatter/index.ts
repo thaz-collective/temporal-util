@@ -26,7 +26,7 @@ export const DEFAULT_DATE_TIME_ZONE_FORMAT = {
  * Locale portion of the {@link Intl.DateTimeFormat}
  */
 export interface LocaleOptions {
-  locale?: NonNullable<Intl.LocalesArgument>;
+  locale: NonNullable<Intl.LocalesArgument>;
 }
 
 /**
@@ -42,7 +42,7 @@ export type PlainDateOptions = SetNonNullable<Pick<Intl.DateTimeFormatOptions, '
  * @see {@link buildPlainTimeFormatter}
  * @see {@link buildInstantFormatter}
  */
-export function buildPlainDateFormatter(options: LocaleOptions & PlainDateOptions = {}) {
+export function buildPlainDateFormatter(options: LocaleOptions & PlainDateOptions) {
   return new Intl.DateTimeFormat(options?.locale, {
     ...DEFAULT_DATE_FORMAT,
     ...options,
@@ -64,7 +64,7 @@ export type PlainTimeOptions = SetNonNullable<
  * @see {@link buildPlainDateFormatter}
  * @see {@link buildInstantFormatter}
  */
-export function buildPlainTimeFormatter(options: LocaleOptions & PlainTimeOptions = {}) {
+export function buildPlainTimeFormatter(options: LocaleOptions & PlainTimeOptions) {
   return new Intl.DateTimeFormat(options?.locale, {
     ...DEFAULT_TIME_FORMAT,
     ...options,
