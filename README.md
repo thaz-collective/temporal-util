@@ -97,7 +97,7 @@ const schema = v.object({
 ```
 
 | Schema               | Accepts                   |
-|----------------------|---------------------------|
+| -------------------- | ------------------------- |
 | `t.duration()`       | `Temporal.Duration`       |
 | `t.zonedDateTime()`  | `Temporal.ZonedDateTime`  |
 | `t.instant()`        | `Temporal.Instant`        |
@@ -123,7 +123,7 @@ v.parse(schema, '2024-01-01T00:00:00Z'); // Temporal.Instant
 ```
 
 | Action                 | Converts to               | Accepts                                                                                                                  |
-|------------------------|---------------------------|--------------------------------------------------------------------------------------------------------------------------|
+| ---------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | `t.toZonedDateTime()`  | `Temporal.ZonedDateTime`  | `string` (RFC 9557), `Temporal.ZonedDateTime`                                                                            |
 | `t.toInstant()`        | `Temporal.Instant`        | `string` (RFC 9557), `number` (epoch ms), `bigint` (epoch ns), `Date`, `Temporal.ZonedDateTime`, `Temporal.Instant`      |
 | `t.toPlainDateTime()`  | `Temporal.PlainDateTime`  | `string` (RFC 9557), `Temporal.ZonedDateTime`, `Temporal.PlainDateTime`                                                  |
@@ -155,7 +155,7 @@ v.parse(schema, Temporal.PlainDate.from('2023-12-31')); // throws ValiError
 ```
 
 | Action                               | Passes when...                                  |
-|--------------------------------------|-------------------------------------------------|
+| ------------------------------------ | ----------------------------------------------- |
 | `t.temporalValue(requirement)`       | value equals `requirement`                      |
 | `t.temporalNotValue(requirement)`    | value does not equal `requirement`              |
 | `t.temporalGTValue(requirement)`     | value is greater than `requirement`             |
@@ -188,7 +188,7 @@ v.parse(schema, Temporal.PlainDate.from('2025-06-01')); // -> 2024-12-31 (clampe
 ```
 
 | Action                              | Clamps when...                      |
-|-------------------------------------|-------------------------------------|
+| ----------------------------------- | ----------------------------------- |
 | `t.temporalToMinValue(requirement)` | value is less than `requirement`    |
 | `t.temporalToMaxValue(requirement)` | value is greater than `requirement` |
 

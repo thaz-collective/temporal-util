@@ -45,7 +45,6 @@ export default defineConfig({
     entry: {
       index: './src/index.ts',
       valibot: './src/valibot/index.ts',
-      formatter: './src/formatter/index.ts',
     },
     exports: {
       customExports: {
@@ -56,10 +55,6 @@ export default defineConfig({
         './valibot': {
           types: './dist/valibot.d.mts',
           import: './dist/valibot.mjs',
-        },
-        './formatter': {
-          types: './dist/formatter.d.mts',
-          import: './dist/formatter.mjs',
         },
       },
     },

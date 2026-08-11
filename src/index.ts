@@ -1,4 +1,4 @@
-import type { SetNonNullable } from 'type-fest';
+import type { SetNonNullable } from './types';
 
 /**
  * Centralizes environment detection so when working with we have a consistent calendar value
