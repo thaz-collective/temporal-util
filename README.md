@@ -122,15 +122,15 @@ const schema = v.pipe(v.unknown(), t.toInstant('Unable to parse an Instant from 
 v.parse(schema, '2024-01-01T00:00:00Z'); // Temporal.Instant
 ```
 
-| Action               | Converts to               | Accepts                                                                                                             |
-| -------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `toZonedDateTime()`  | `Temporal.ZonedDateTime`  | `string`, `Temporal.ZonedDateTime`                                                                                  |
-| `toInstant()`        | `Temporal.Instant`        | `string` (RFC 9557), `number` (epoch ms), `bigint` (epoch ns), `Date`, `Temporal.ZonedDateTime`, `Temporal.Instant` |
-| `toPlainDateTime()`  | `Temporal.PlainDateTime`  | `string`, `Temporal.ZonedDateTime`, `Temporal.PlainDateTime`                                                        |
-| `toPlainDate()`      | `Temporal.PlainDate`      | `string`, `Temporal.ZonedDateTime`, `Temporal.PlainDateTime`, `Temporal.PlainDate`                                  |
-| `toPlainTime()`      | `Temporal.PlainTime`      | `string`, `Temporal.ZonedDateTime`, `Temporal.PlainDateTime`, `Temporal.PlainTime`                                  |
-| `toPlainYearMonth()` | `Temporal.PlainYearMonth` | `string`, `Temporal.ZonedDateTime`, `Temporal.PlainDateTime`, `Temporal.PlainDate`, `Temporal.PlainYearMonth`       |
-| `toPlainMonthDay()`  | `Temporal.PlainMonthDay`  | `string`, `Temporal.ZonedDateTime`, `Temporal.PlainDateTime`, `Temporal.PlainDate`, `Temporal.PlainMonthDay`        |
+| Action               | Converts to               | Accepts                                                                                                                  |
+|----------------------|---------------------------|--------------------------------------------------------------------------------------------------------------------------|
+| `toZonedDateTime()`  | `Temporal.ZonedDateTime`  | `string` (RFC 9557), `Temporal.ZonedDateTime`                                                                            |
+| `toInstant()`        | `Temporal.Instant`        | `string` (RFC 9557), `number` (epoch ms), `bigint` (epoch ns), `Date`, `Temporal.ZonedDateTime`, `Temporal.Instant`      |
+| `toPlainDateTime()`  | `Temporal.PlainDateTime`  | `string` (RFC 9557), `Temporal.ZonedDateTime`, `Temporal.PlainDateTime`                                                  |
+| `toPlainDate()`      | `Temporal.PlainDate`      | `string` (RFC 9557), `Temporal.ZonedDateTime`, `Temporal.PlainDateTime`, `Temporal.PlainDate`                            |
+| `toPlainTime()`      | `Temporal.PlainTime`      | `string` (RFC 9557), `Temporal.ZonedDateTime`, `Temporal.PlainDateTime`, `Temporal.PlainTime`                            |
+| `toPlainYearMonth()` | `Temporal.PlainYearMonth` | `string` (RFC 9557), `Temporal.ZonedDateTime`, `Temporal.PlainDateTime`, `Temporal.PlainDate`, `Temporal.PlainYearMonth` |
+| `toPlainMonthDay()`  | `Temporal.PlainMonthDay`  | `string` (RFC 9557), `Temporal.ZonedDateTime`, `Temporal.PlainDateTime`, `Temporal.PlainDate`, `Temporal.PlainMonthDay`  |
 
 ---
 
