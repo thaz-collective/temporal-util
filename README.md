@@ -2,8 +2,7 @@
 
 Temporal utilities for applications and libraries in the thaz-collective namespace. Provides a preferred `Intl` formatter
 configuration and a set of [Valibot](https://valibot.dev/) schemas and actions for validating, comparing, and transforming
-[`Temporal`](https://tc39.es/proposal-temporal/docs/) values (assumes a global `Temporal`, e.g. via
-[`temporal-polyfill`](https://www.npmjs.com/package/temporal-polyfill)).
+[`Temporal`](https://tc39.es/proposal-temporal/docs/) values.
 
 ---
 
@@ -18,7 +17,8 @@ vp add @thaz/temporal-util temporal-polyfill valibot
 ## Requirements
 
 This library assumes a global `Temporal` (and Temporal-aware `Intl`) is already available at runtime — it does not
-bundle or import a Temporal polyfill itself. In your application's entry point, before any code from this package
+bundle or import a Temporal polyfill itself. If you need one then [`temporal-polyfill`](https://www.npmjs.com/package/temporal-polyfill)
+is the recommendation. In your application's entry point, before any code from this package
 runs:
 
 ```ts
