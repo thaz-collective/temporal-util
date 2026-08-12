@@ -1,9 +1,9 @@
 blockExoticSubdeps: true
 
 catalog:
-  '@thaz/oxfmt-config': 1.0.0-rc.1
-  '@thaz/oxlint-config': 1.0.0-rc.1
-  '@thaz/typescript-config': 1.0.0-rc.1
+  '@thaz/oxfmt-config': 1.0.0-rc.3
+  '@thaz/oxlint-config': 1.0.0-rc.2
+  '@thaz/typescript-config': 1.0.0-rc.2
   '@types/node': 24.13.3
   '@vitest/coverage-istanbul': 4.1.10
   '@vitest/ui': 4.1.10
@@ -11,9 +11,9 @@ catalog:
   type-fest: 5.8.0
   typescript: 6.0.3
   valibot: 1.4.2
-  vite: npm:@voidzero-dev/vite-plus-core@0.2.4
+  vite: npm:@voidzero-dev/vite-plus-core@0.2.9
   vite-plugin-externalize-deps: 0.10.0
-  vite-plus: 0.2.4
+  vite-plus: 0.2.9
   vitest: 4.1.10
 
 catalogMode: prefer
@@ -21,9 +21,19 @@ catalogMode: prefer
 minimumReleaseAge: 4320 # 3 days just to be safe with the uptick of supply chain attacks
 
 minimumReleaseAgeExclude:
-  - '@thaz/typescript-config@1.0.0-rc.1'
-  - '@thaz/oxfmt-config@1.0.0-rc.1'
-  - '@thaz/oxlint-config@1.0.0-rc.1'
+  - '@thaz/oxfmt-config@1.0.0-rc.3'
+  - '@thaz/oxlint-config@1.0.0-rc.2'
+  - '@thaz/typescript-config@1.0.0-rc.2'
+  - '@voidzero-dev/vite-plus-core@0.2.9'
+  - '@voidzero-dev/vite-plus-darwin-arm64@0.2.9'
+  - '@voidzero-dev/vite-plus-darwin-x64@0.2.9'
+  - '@voidzero-dev/vite-plus-linux-arm64-gnu@0.2.9'
+  - '@voidzero-dev/vite-plus-linux-arm64-musl@0.2.9'
+  - '@voidzero-dev/vite-plus-linux-x64-gnu@0.2.9'
+  - '@voidzero-dev/vite-plus-linux-x64-musl@0.2.9'
+  - '@voidzero-dev/vite-plus-win32-arm64-msvc@0.2.9'
+  - '@voidzero-dev/vite-plus-win32-x64-msvc@0.2.9'
+  - vite-plus@0.2.9
 
 overrides:
   vite: 'catalog:'
