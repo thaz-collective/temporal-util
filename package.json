@@ -1,6 +1,6 @@
 {
   "name": "@thaz/temporal-util",
-  "version": "1.0.0-rc.2",
+  "version": "1.0.0-rc.3",
   "description": "Set of temporal utilities for applications and libraries in the thaz collective namespace",
   "keywords": [
     "date",
