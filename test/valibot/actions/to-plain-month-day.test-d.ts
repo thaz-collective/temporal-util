@@ -1,5 +1,6 @@
-import type { InferInput, InferIssue, InferOutput } from 'valibot';
 import { describe, expectTypeOf, test } from 'vite-plus/test';
+
+import type { InferInput, InferIssue, InferOutput } from 'valibot';
 
 import type { ToPlainMonthDayAction, ToPlainMonthDayIssue } from '#src/valibot/actions/to-plain-month-day';
 import { toPlainMonthDay } from '#src/valibot/actions/to-plain-month-day';

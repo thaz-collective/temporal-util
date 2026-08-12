@@ -1,5 +1,5 @@
-import { externalizeDeps } from 'vite-plugin-externalize-deps';
 import { defineConfig } from 'vite-plus';
+import { externalizeDeps } from 'vite-plugin-externalize-deps';
 
 import { oxfmtConfig } from '@thaz/oxfmt-config';
 import { nativeConfig, libraryCodeConfigRules } from '@thaz/oxlint-config';

@@ -1,5 +1,6 @@
-import type { InferInput, InferIssue, InferOutput } from 'valibot';
 import { describe, expectTypeOf, test } from 'vite-plus/test';
+
+import type { InferInput, InferIssue, InferOutput } from 'valibot';
 
 import type { TemporalValueInput } from '#src/valibot/actions/types';
 import type { TemporalValueAction, TemporalValueIssue } from '#src/valibot/actions/value';

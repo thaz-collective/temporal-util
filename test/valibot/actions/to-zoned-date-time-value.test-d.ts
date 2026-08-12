@@ -1,5 +1,6 @@
-import type { InferInput, InferIssue, InferOutput } from 'valibot';
 import { describe, expectTypeOf, test } from 'vite-plus/test';
+
+import type { InferInput, InferIssue, InferOutput } from 'valibot';
 
 import type { ToZonedDateTimeAction, ToZonedDateTimeIssue } from '#src/valibot/actions/to-zoned-date-time-value';
 import { toZonedDateTime } from '#src/valibot/actions/to-zoned-date-time-value';

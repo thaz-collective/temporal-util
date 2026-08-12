@@ -1,5 +1,6 @@
-import type { InferInput, InferIssue, InferOutput } from 'valibot';
 import { describe, expectTypeOf, test } from 'vite-plus/test';
+
+import type { InferInput, InferIssue, InferOutput } from 'valibot';
 
 import type { InstantIssue, InstantSchema } from '#src/valibot/schema/instant';
 import { instant } from '#src/valibot/schema/instant';

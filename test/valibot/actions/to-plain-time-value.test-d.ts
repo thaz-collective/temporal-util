@@ -1,5 +1,6 @@
-import type { InferInput, InferIssue, InferOutput } from 'valibot';
 import { describe, expectTypeOf, test } from 'vite-plus/test';
+
+import type { InferInput, InferIssue, InferOutput } from 'valibot';
 
 import type { ToPlainTimeAction, ToPlainTimeIssue } from '#src/valibot/actions/to-plain-time-value';
 import { toPlainTime } from '#src/valibot/actions/to-plain-time-value';

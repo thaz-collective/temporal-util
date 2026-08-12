@@ -1,5 +1,6 @@
-import type { InferInput, InferIssue, InferOutput } from 'valibot';
 import { describe, expectTypeOf, test } from 'vite-plus/test';
+
+import type { InferInput, InferIssue, InferOutput } from 'valibot';
 
 import type { ZonedDateTimeIssue, ZonedDateTimeSchema } from '#src/valibot/schema/zoned-date-time';
 import { zonedDateTime } from '#src/valibot/schema/zoned-date-time';
