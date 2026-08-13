@@ -1,12 +1,11 @@
 {
   "extends": [
     "@thaz/typescript-config/bundler.json",
-    "@thaz/typescript-config/lib.json",
+    "@thaz/typescript-config/lib-temporal.json",
     "@thaz/typescript-config/paths.json"
   ],
   "include": ["src", "test", "vite.config.ts"],
   "compilerOptions": {
-    "types": ["node"],
-    "lib": ["es2023", "esnext.temporal", "esnext.intl", "esnext.date"]
+    "types": ["node"]
   }
 }
